@@ -7,6 +7,6 @@ namespace Server.GameInterpreter
 {
     interface IGameBoard
     {
-        IEnumerable<GameAction> GetPossibleMoves();
+        IEnumerable<IGameAction> GetPossibleMoves(string playerId);
     }
 }

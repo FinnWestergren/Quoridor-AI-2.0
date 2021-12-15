@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace Server.GameInterpreter
 {
-    public class GameAction
+    public interface IGameAction
     {
+        int SerializedAction();
+        int ValueOf();
     }
 }
