@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 
 namespace Server.GameInterpreter
 {
-    interface IGameBoard
+    public interface IGameBoard<TGame> where TGame : IGame
     {
-        IEnumerable<IGameAction> GetPossibleMoves(string playerId);
+        void CommitAction(IGameAction<TGame> action);
+        void CommitAction(int serializedAction);
+        IEnumerable<IGameAction<TGame>> GetPossibleMoves(Guid? playerId);
+        GameType GetGameType();
     }
+
 }

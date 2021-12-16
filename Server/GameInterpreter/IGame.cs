@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace Server.GameInterpreter
 {
-    public interface IGameAction<T>
+    public interface IGame
     {
-        int SerializedAction();
     }
+
+    public class TicTacToe : IGame { };
 }
