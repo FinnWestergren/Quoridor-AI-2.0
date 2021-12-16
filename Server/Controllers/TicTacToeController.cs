@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Server.GameInterpreter;
+using Server.Game.TicTacToe;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,16 +20,16 @@ namespace Server.Controllers
         [Route("[controller]/ValidateBoard")]
         public ActionResult<IEnumerable<string>> ValidateBoard(string board)
         {
-            var parsedBoard = new TicTacToeBoard(board);
-            return new JsonResult(parsedBoard.BoardString());
+            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
+            return new JsonResult(TicTacToeUtilities.PrintBoard(parsedBoard));
         }
 
         [HttpGet]
         [Route("[controller]/GetPossibleMoves")]
-        public ActionResult<IEnumerable<string>> GetPossibleMoves(string board)
+        public ActionResult<IEnumerable<string>> GetPossibleMoves(string board, PlayerMarker playerMarker)
         {
-            var parsedBoard = new TicTacToeBoard(board);
-            return new JsonResult(parsedBoard.GetPossibleMoves(null).Select(m => m.SerializedAction().ToString()));
+            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
+            return new JsonResult(TicTacToeUtilities.GetPossibleMoves(playerMarker, parsedBoard).Select(m => m.SerializedAction().ToString()));
         }
 
 
@@ -37,9 +37,9 @@ namespace Server.Controllers
         [Route("[controller]/CommitAction")]
         public ActionResult<IEnumerable<string>> CommitAction(string board, int serializedAction)
         {
-            var parsedBoard = new TicTacToeBoard(board);
-            parsedBoard.CommitAction(serializedAction);
-            return new JsonResult(parsedBoard.BoardString());
+            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
+            var nextBoard = TicTacToeUtilities.CommitAction(serializedAction, parsedBoard);
+            return new JsonResult(TicTacToeUtilities.PrintBoard(nextBoard));
         }
     }
 }
