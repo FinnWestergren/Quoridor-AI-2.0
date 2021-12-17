@@ -7,6 +7,9 @@ namespace Server.Game.TicTacToe
     public static class TicTacToeUtilities
     {
         private const int DIMENSION = 3;
+
+        public static Cell[,] EmptyBoard => ParseBoard("---------"); // kinda hacky but saves several lines of redundant looking code
+
         public static Cell[,] ParseBoard(string boardString)
         {
             var output = new Cell[DIMENSION, DIMENSION];
@@ -138,7 +141,6 @@ namespace Server.Game.TicTacToe
 
             yield return diagRunOne;
             yield return diagRunTwo;
-
         }
     }
 }

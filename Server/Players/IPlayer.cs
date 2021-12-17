@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Server.Players
 {
-    public interface IPlayer<TGame> where TGame : IGame
+    public interface IPlayer
     {
         public Guid GetPlayerId();
     }

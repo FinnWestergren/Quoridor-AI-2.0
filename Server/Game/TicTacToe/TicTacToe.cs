@@ -7,15 +7,26 @@ namespace Server.Game.TicTacToe
     public class TicTacToe : IGame
     {
         private readonly Stack<Cell[,]> _history;
-        private readonly Guid _xPlayer;
-        private readonly Guid _oPlayer;
+        public Guid PlayerOne { get; set; }
+        public Guid PlayerTwo { get; set; }
+        public Guid GameId { get; set; }
 
-        public TicTacToe(string boardString, Guid playerOne, Guid playerTwo)
+        public TicTacToe()
+        {
+            _history = new Stack<Cell[,]>();
+            _history.Push(TicTacToeUtilities.EmptyBoard);
+            PlayerOne = Guid.NewGuid();
+            PlayerTwo = Guid.NewGuid();
+            GameId = Guid.NewGuid();
+        }
+
+        public TicTacToe(string boardString, Guid playerOne, Guid playerTwo, Guid gameId)
         {
             _history = new Stack<Cell[,]>();
             _history.Push(TicTacToeUtilities.ParseBoard(boardString));
-            _xPlayer = playerOne;
-            _oPlayer = playerTwo;
+            PlayerOne = playerOne;
+            PlayerTwo = playerTwo;
+            GameId = gameId;
         }
 
         public void CommitAction(int serializedAction, Guid playerId)
@@ -33,8 +44,8 @@ namespace Server.Game.TicTacToe
 
         public PlayerMarker GetPlayerMarker(Guid playerId)
         {
-            if (playerId == _xPlayer) return PlayerMarker.X;
-            if (playerId == _oPlayer) return PlayerMarker.O;
+            if (playerId == PlayerOne) return PlayerMarker.X;
+            if (playerId == PlayerTwo) return PlayerMarker.O;
             throw new Exception($"player ID {playerId} not registered");
         }
 

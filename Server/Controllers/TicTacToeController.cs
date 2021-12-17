@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Server.Game.TicTacToe;
+using Server.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,6 +42,14 @@ namespace Server.Controllers
             var parsedBoard = TicTacToeUtilities.ParseBoard(board);
             var nextBoard = TicTacToeUtilities.CommitActionToBoard(playerMarker, serializedAction, parsedBoard);
             return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(nextBoard));
+        }
+
+        [HttpGet]
+        [Route("[controller]/NewGame")]
+        public ActionResult<TicTacToeGameViewModel> NewGame()
+        {
+            var game = new TicTacToe();
+            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
         }
     }
 }
