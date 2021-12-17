@@ -12,7 +12,8 @@ namespace Server.Game
         void UndoAction();
         void Print();
         string GameType();
-        IEnumerable<IGameAction> GetPossibleMoves(Guid playerId);
+        IEnumerable<IGameAction> GetPossibleMoves(Guid playerId); 
+        IEnumerable<IGameAction> GetPossibleMovesForEnemy(Guid playerId);
         int GetBoardValue(Guid playerId);
     }
 

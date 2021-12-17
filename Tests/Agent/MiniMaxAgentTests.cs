@@ -27,7 +27,6 @@ namespace Tests.Agent
 
         private void Init()
         {
-
             var winningMockAction = new Mock<IGameAction>();
             winningMockAction.Setup(a => a.SerializedAction).Returns(_winningAction);
             winningMockAction.Setup(a => a.CommittedBy).Returns(_playerId);
@@ -36,10 +35,18 @@ namespace Tests.Agent
             losingMockAction.Setup(a => a.SerializedAction).Returns(_losingAction);
             losingMockAction.Setup(a => a.CommittedBy).Returns(_playerId);
 
+
+            List<IGameAction> GetNextActions() => selectedAction switch
+            {
+                _winningAction => new List<IGameAction>(),
+                _losingAction => new List<IGameAction>(),
+                _ => new List<IGameAction> { winningMockAction.Object, losingMockAction.Object }
+            };
+
             var initialGame = new Mock<IGame>();
             initialGame.Setup(g => g.PlayerOne).Returns(_playerId);
             initialGame.Setup(g => g.GetBoardValue(_playerId)).Returns(ActionValue);
-            initialGame.Setup(g => g.GetPossibleMoves(_playerId)).Returns(new List<IGameAction> { winningMockAction.Object, losingMockAction.Object });
+            initialGame.Setup(g => g.GetPossibleMoves(_playerId)).Returns(GetNextActions);
 
             initialGame.Setup(g => g.UndoAction()).Callback(() => _game = initialGame.Object);
             initialGame.Setup(g => g.CommitAction(_winningAction, _playerId)).Callback(() => selectedAction = _winningAction);

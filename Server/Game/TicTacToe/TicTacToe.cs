@@ -58,6 +58,12 @@ namespace Server.Game.TicTacToe
             return openCells.Select(c => new TicTacToeAction(c, playerId));
         }
 
+        public IEnumerable<IGameAction> GetPossibleMovesForEnemy(Guid playerId)
+        {
+            var enemyID = playerId == PlayerOne ? PlayerTwo : PlayerOne;
+            return GetPossibleMoves(enemyID);
+        }
+
         public int GetBoardValue(Guid playerId)
         {
             var playerMarker = GetPlayerMarker(playerId);
