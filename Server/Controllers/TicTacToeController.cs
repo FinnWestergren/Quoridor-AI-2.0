@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Server.Game.TicTacToe;
+using Server.Services;
 using Server.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,54 +13,65 @@ namespace Server.Controllers
     [ApiController]
     public class TicTacToeController : ControllerBase
     {
-        private readonly ILogger<TicTacToeController> _logger;
+        private readonly GamePresentationService<TicTacToe> _presentationService;
+        private readonly GameCommandService<TicTacToe> _commandService;
 
-        public TicTacToeController(ILogger<TicTacToeController> logger)
+        public TicTacToeController(IMemoryCache memoryCache)
         {
-            _logger = logger;
+            _presentationService = new GamePresentationService<TicTacToe>(memoryCache);
+            _commandService = new GameCommandService<TicTacToe>(memoryCache);
         }
 
         [HttpGet]
-        [Route("[controller]/ValidateBoard")]
-        public ActionResult<IEnumerable<string>> ValidateBoard(string board)
+        [Route("[controller]/PrintBoard")]
+        public ActionResult<IEnumerable<string>> PrintBoard(Guid gameId)
         {
-            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(parsedBoard));
+            var game = _presentationService.GetGame(gameId);
+            return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(game.CurrentBoard));
         }
 
         [HttpGet]
         [Route("[controller]/GetPossibleMoves")]
-        public ActionResult<IEnumerable<string>> GetPossibleMoves(string board)
+        public ActionResult<IEnumerable<string>> GetPossibleMoves(Guid gameId)
         {
-            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            var moveSet = TicTacToeUtilities.GetOpenCells(parsedBoard);
+            var game = _presentationService.GetGame(gameId);
+            var moveSet = TicTacToeUtilities.GetOpenCells(game.CurrentBoard);
             return new JsonResult(moveSet);
         }
 
 
-        [HttpGet]
+        [HttpPost]
         [Route("[controller]/CommitAction")]
-        public ActionResult<IEnumerable<string>> CommitAction(string board, int serializedAction, PlayerMarker player)
+        public ActionResult<IEnumerable<string>> CommitAction(Guid gameId, int serializedAction, Guid playerId)
         {
-            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            var nextBoard = TicTacToeUtilities.CommitActionToBoard(player, serializedAction, parsedBoard);
-            return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(nextBoard));
+            var game = _presentationService.GetGame(gameId);
+            game.CommitAction(serializedAction, playerId);
+            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
         }
 
         [HttpGet]
         [Route("[controller]/NewGame")]
-        public ActionResult<TicTacToeGameViewModel> NewGame()
+        public ActionResult<TicTacToeGameViewModel> NewGame(string board = null)
         {
-            var game = new TicTacToe();
+            var game = new TicTacToe(board);
+            _commandService.AddGame(game);
+            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+        }
+
+        [HttpGet]
+        [Route("[controller]/GetGame")]
+        public ActionResult<TicTacToeGameViewModel> GetGame(Guid gameId)
+        {
+            var game = _presentationService.GetGame(gameId);
             return new JsonResult(TicTacToeGameViewModel.FromGame(game));
         }
 
         [HttpGet]
         [Route("[controller]/IsWinCondition")]
-        public ActionResult<IEnumerable<string>> IsWinCondition(string board, PlayerMarker player)
+        public ActionResult<IEnumerable<string>> IsWinCondition(Guid gameId, PlayerMarker player)
         {
-            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            var isWin = TicTacToeUtilities.IsWinCondition(player, parsedBoard);
+            var game = _presentationService.GetGame(gameId);
+            var isWin = TicTacToeUtilities.IsWinCondition(player, game.CurrentBoard);
             return new JsonResult(isWin);
         }
     }

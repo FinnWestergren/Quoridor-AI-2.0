@@ -11,10 +11,11 @@ namespace Server.Game.TicTacToe
         public Guid PlayerTwo { get; set; }
         public Guid GameId { get; set; }
 
-        public TicTacToe()
+        public TicTacToe(string boardString = null)
         {
             _history = new Stack<Cell[,]>();
-            _history.Push(TicTacToeUtilities.EmptyBoard);
+            var board = boardString == null ? TicTacToeUtilities.EmptyBoard : TicTacToeUtilities.ParseBoard(boardString);
+            _history.Push(board);
             PlayerOne = Guid.NewGuid();
             PlayerTwo = Guid.NewGuid();
             GameId = Guid.NewGuid();

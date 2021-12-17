@@ -17,6 +17,12 @@
         public int Col { get; set; } // 0 1 2
 
         public PlayerMarker OccupiedBy { get; set; } = PlayerMarker.None;
+        public char PrintCell => OccupiedBy switch
+        { 
+            PlayerMarker.X => 'X',
+            PlayerMarker.O => 'O',
+            _ => '-'
+        };
         public override string ToString()
         {
             return $"row {Row}, col {Col}: {OccupiedBy}";

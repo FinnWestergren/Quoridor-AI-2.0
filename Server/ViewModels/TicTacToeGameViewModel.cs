@@ -9,6 +9,7 @@ namespace Server.ViewModels
         public IEnumerable<Cell> CurrentBoard { get; set; }
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
+        public Guid GameId { get; set; }
 
         public static TicTacToeGameViewModel FromGame(TicTacToe game)
         {
@@ -25,7 +26,8 @@ namespace Server.ViewModels
             {
                 CurrentBoard = board(),
                 PlayerOne = game.PlayerOne,
-                PlayerTwo = game.PlayerTwo
+                PlayerTwo = game.PlayerTwo,
+                GameId = game.GameId
             };
         }
     }

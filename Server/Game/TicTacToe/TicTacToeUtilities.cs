@@ -65,9 +65,12 @@ namespace Server.Game.TicTacToe
 
         public static IEnumerable<string> PrintHumanReadableBoard(Cell[,] board)
         {
-            foreach (var cell in board)
+            var range = Enumerable.Range(0, DIMENSION);
+            IEnumerable<char> rowRun(int row) => range.Select(col => board[row, col].PrintCell);
+
+            foreach (var i in range)
             {
-                yield return cell.ToString();
+                yield return String.Join("", rowRun(i));
             }
         }
 
