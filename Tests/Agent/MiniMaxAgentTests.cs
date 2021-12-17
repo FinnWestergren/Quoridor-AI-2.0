@@ -16,14 +16,7 @@ namespace Tests.Agent
         private const int _winningAction = 69; // nice
         private const int _losingAction = 70; // not nice :(
         private IAgent _agent;
-        private int selectedAction = 0;
-
-        private int ActionValue() => selectedAction switch
-        {
-            _winningAction => 1,
-            _losingAction => -1,
-            _ => 0
-        };
+        private int _selectedAction = 0;
 
         private void Init()
         {
@@ -35,8 +28,14 @@ namespace Tests.Agent
             losingMockAction.Setup(a => a.SerializedAction).Returns(_losingAction);
             losingMockAction.Setup(a => a.CommittedBy).Returns(_playerId);
 
+            int ActionValue() => _selectedAction switch
+            {
+                _winningAction => 1,
+                _losingAction => -1,
+                _ => 0
+            };
 
-            List<IGameAction> GetNextActions() => selectedAction switch
+            List<IGameAction> GetNextActions() => _selectedAction switch
             {
                 _winningAction => new List<IGameAction>(),
                 _losingAction => new List<IGameAction>(),
@@ -49,8 +48,8 @@ namespace Tests.Agent
             initialGame.Setup(g => g.GetPossibleMoves(_playerId)).Returns(GetNextActions);
 
             initialGame.Setup(g => g.UndoAction()).Callback(() => _game = initialGame.Object);
-            initialGame.Setup(g => g.CommitAction(_winningAction, _playerId)).Callback(() => selectedAction = _winningAction);
-            initialGame.Setup(g => g.CommitAction(_losingAction, _playerId)).Callback(() => selectedAction = _losingAction);
+            initialGame.Setup(g => g.CommitAction(_winningAction, _playerId)).Callback(() => _selectedAction = _winningAction);
+            initialGame.Setup(g => g.CommitAction(_losingAction, _playerId)).Callback(() => _selectedAction = _losingAction);
 
             _game = initialGame.Object;
             _agent = new MiniMaxAgent(_playerId);

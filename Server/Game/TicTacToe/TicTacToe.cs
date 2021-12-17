@@ -54,6 +54,10 @@ namespace Server.Game.TicTacToe
 
         public IEnumerable<IGameAction> GetPossibleMoves(Guid playerId)
         {
+            if (GetBoardValue(playerId) != 0)
+            {
+                return new List<IGameAction>(); // game over
+            }
             var openCells = TicTacToeUtilities.GetOpenCells(CurrentBoard);
             return openCells.Select(c => new TicTacToeAction(c, playerId));
         }

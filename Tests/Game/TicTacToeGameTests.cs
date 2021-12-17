@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Server.Game.TicTacToe;
 using System;
+using System.Linq;
 
 namespace Tests.Game
 {
@@ -57,6 +58,8 @@ namespace Tests.Game
             var TTT = new TicTacToe("XXX------");
             Assert.IsTrue(TTT.GetBoardValue(TTT.PlayerOne) == 1);
             Assert.IsTrue(TTT.GetBoardValue(TTT.PlayerTwo) == -1);
+            Assert.IsTrue(!TTT.GetPossibleMoves(TTT.PlayerOne).Any());
+            Assert.IsTrue(!TTT.GetPossibleMoves(TTT.PlayerTwo).Any());
         }
 
         [TestMethod]
