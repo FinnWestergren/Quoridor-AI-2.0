@@ -16,7 +16,7 @@ namespace Server.Services
             _memoryCache = memoryCache;
         }
 
-        public void AddGame(TGame game)
+        public void SaveGame(TGame game)
         {
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetSlidingExpiration(new TimeSpan(TimeSpan.TicksPerHour));

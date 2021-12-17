@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Server.Game.TicTacToe;
+using Server.Players.Agent;
 using Server.Services;
 using Server.ViewModels;
 using System;
@@ -33,7 +34,7 @@ namespace Server.Controllers
         public ActionResult<IEnumerable<string>> GetPossibleMoves(Guid gameId)
         {
             var game = _presentationService.GetGame(gameId);
-            var moveSet = TicTacToeUtilities.GetOpenCells(game.CurrentBoard);
+            var moveSet = game.GetPossibleMoves(game.PlayerOne);
             return new JsonResult(moveSet);
         }
 
@@ -52,7 +53,7 @@ namespace Server.Controllers
         public ActionResult<TicTacToeGameViewModel> NewGame(string board = null)
         {
             var game = new TicTacToe(board);
-            _commandService.AddGame(game);
+            _commandService.SaveGame(game);
             return new JsonResult(TicTacToeGameViewModel.FromGame(game));
         }
 
@@ -72,5 +73,22 @@ namespace Server.Controllers
             var isWin = TicTacToeUtilities.IsWinCondition(player, game.CurrentBoard);
             return new JsonResult(isWin);
         }
+
+        [HttpPost]
+        [Route("[controller]/GetMinimaxMove")]
+        public ActionResult<TicTacToeGameViewModel> GetMinimaxMove(Guid gameId, PlayerMarker player)
+        {
+            var game = _presentationService.GetGame(gameId);
+            var playerId = player == PlayerMarker.X ? game.PlayerOne : game.PlayerTwo;
+            var agent = new MiniMaxAgent(playerId);
+            var move = agent.GetNextAction(game);
+            if (move != null)
+            {
+                game.CommitAction(move.SerializedAction, playerId);
+                _commandService.SaveGame(game);
+            }
+            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+        }
+
     }
 }

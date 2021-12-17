@@ -15,7 +15,11 @@ namespace Server.Players.Agent
             _maxSearchDepth = maxSearchDepth;
         }
 
-        public IGameAction GetNextAction(IGame game) => MaxMove(game).action;
+        public IGameAction GetNextAction(IGame game) 
+        {
+            var (val, action) = MaxMove(game);
+            return action;
+        }
 
         private (int value, IGameAction action) MaxMove(IGame game, int depth = 0)
         {
@@ -29,7 +33,7 @@ namespace Server.Players.Agent
             foreach (var move in possibleMoves)
             {
                 game.CommitAction(move.SerializedAction, PlayerId);
-                var value = MinMove(game, depth + 1).value;
+                var value = MinMove(game, depth + 1);
                 game.UndoAction();
                 if (value > maxSoFar)
                 {
@@ -40,27 +44,26 @@ namespace Server.Players.Agent
             return (maxSoFar, bestMove);
         }
 
-        private (int value, IGameAction action) MinMove(IGame game, int depth)
+        private int MinMove(IGame game, int depth)
         {
-            var possibleMoves = game.GetPossibleMovesForEnemy(PlayerId);
+            var enemyId = game.GetEnemyId(PlayerId);
+            var possibleMoves = game.GetPossibleMoves(enemyId);
             if (!possibleMoves.Any() || depth > _maxSearchDepth)
             {
-                return (game.GetBoardValue(PlayerId), null);
+                return game.GetBoardValue(PlayerId);
             }
             var minSoFar = Int32.MaxValue;
-            IGameAction bestMove = null;
             foreach (var move in possibleMoves)
             {
-                game.CommitAction(move.SerializedAction, PlayerId);
+                game.CommitAction(move.SerializedAction, enemyId);
                 var value = MaxMove(game, depth + 1).value;
                 game.UndoAction();
                 if (value < minSoFar)
                 {
-                    bestMove = move;
                     minSoFar = value;
                 }
             }
-            return (minSoFar, bestMove);
+            return minSoFar;
         }
     }
 }

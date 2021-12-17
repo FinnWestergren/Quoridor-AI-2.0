@@ -37,6 +37,8 @@ namespace Server.Game.TicTacToe
             _history.Push(next);
         }
 
+        public Guid GetEnemyId(Guid playerId) => playerId == PlayerOne ? PlayerTwo : PlayerOne;
+
         public void UndoAction() => _history.Pop();
 
         public void Print() => TicTacToeUtilities.PrintBoard(CurrentBoard);
@@ -60,12 +62,6 @@ namespace Server.Game.TicTacToe
             }
             var openCells = TicTacToeUtilities.GetOpenCells(CurrentBoard);
             return openCells.Select(c => new TicTacToeAction(c, playerId));
-        }
-
-        public IEnumerable<IGameAction> GetPossibleMovesForEnemy(Guid playerId)
-        {
-            var enemyID = playerId == PlayerOne ? PlayerTwo : PlayerOne;
-            return GetPossibleMoves(enemyID);
         }
 
         public int GetBoardValue(Guid playerId)
