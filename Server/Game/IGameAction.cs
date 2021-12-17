@@ -7,7 +7,7 @@ namespace Server.Game
 {
     public interface IGameAction
     {
-        int SerializedAction(); 
+        int SerializedAction { get; }
         Guid CommittedBy { get; set; }
 
     }

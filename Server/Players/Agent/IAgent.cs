@@ -8,7 +8,6 @@ namespace Server.Players.Agent
 {
     public interface IAgent : IPlayer
     {
-        public IGameAction GetNextAction();
-        public int GetValueOfAction(IGameAction action);
+        public IGameAction GetNextAction(IGame game);
     }
 }
