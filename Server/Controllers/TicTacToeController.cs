@@ -37,10 +37,10 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/CommitAction")]
-        public ActionResult<IEnumerable<string>> CommitAction(string board, int serializedAction, PlayerMarker playerMarker)
+        public ActionResult<IEnumerable<string>> CommitAction(string board, int serializedAction, PlayerMarker player)
         {
             var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            var nextBoard = TicTacToeUtilities.CommitActionToBoard(playerMarker, serializedAction, parsedBoard);
+            var nextBoard = TicTacToeUtilities.CommitActionToBoard(player, serializedAction, parsedBoard);
             return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(nextBoard));
         }
 
@@ -50,6 +50,15 @@ namespace Server.Controllers
         {
             var game = new TicTacToe();
             return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+        }
+
+        [HttpGet]
+        [Route("[controller]/IsWinCondition")]
+        public ActionResult<IEnumerable<string>> IsWinCondition(string board, PlayerMarker player)
+        {
+            var parsedBoard = TicTacToeUtilities.ParseBoard(board);
+            var isWin = TicTacToeUtilities.IsWinCondition(player, parsedBoard);
+            return new JsonResult(isWin);
         }
     }
 }

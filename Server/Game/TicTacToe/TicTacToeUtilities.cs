@@ -14,7 +14,7 @@ namespace Server.Game.TicTacToe
         {
             var output = new Cell[DIMENSION, DIMENSION];
             int index = 0;
-            foreach (var c in boardString)
+            foreach (var c in boardString.ToUpper())
             {
                 var occupiedBy = c switch
                 {
