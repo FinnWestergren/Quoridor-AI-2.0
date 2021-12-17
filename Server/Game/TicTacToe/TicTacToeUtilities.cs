@@ -61,6 +61,21 @@ namespace Server.Game.TicTacToe
             }
         }
 
+        public static (bool valid, string msg) IsValidAction(Cell action, Cell[,] board)
+        {
+            if (!(action.OccupiedBy == PlayerMarker.X || action.OccupiedBy == PlayerMarker.O))
+            {
+                return (false, "invalid player");
+            }
+            if (board[action.Row, action.Col].IsOccupied)
+            {
+                return (false, "cell occupied");
+            }
+
+            return (true, null);
+        }
+
+
         public static bool IsWinCondition(PlayerMarker marker, Cell[,] board) => AllRuns(board).Any(run => run.All(c => c.OccupiedBy == marker));
 
         public static IEnumerable<string> PrintHumanReadableBoard(Cell[,] board)
@@ -79,11 +94,10 @@ namespace Server.Game.TicTacToe
             string output = "";
             foreach (var cell in board)
             {
-                output = $"{output}{cell.OccupiedBy}";
+                output = $"{output}{cell.PrintCell}";
             }
             return output;
         }
-
         private static Cell[,] AlterCell(Cell action, Cell[,] board)
         {
             var next = CopyBoard(board);
@@ -101,20 +115,6 @@ namespace Server.Game.TicTacToe
                     temp[i, j] = new Cell(prev.Row, prev.Col, prev.OccupiedBy);
                 }
             return temp;
-        }
-
-        private static (bool valid, string msg) IsValidAction(Cell action, Cell[,] board)
-        {
-            if (!(action.OccupiedBy == PlayerMarker.X || action.OccupiedBy == PlayerMarker.O))
-            {
-                return (false, "invalid player");
-            }
-            if (board[action.Row, action.Col].IsOccupied)
-            {
-                return (false, "cell occupied");
-            }
-
-            return (true, null);
         }
 
         private static void AssertValidAction(Cell action, Cell[,] board)
