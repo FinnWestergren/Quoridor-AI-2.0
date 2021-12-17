@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Server.Game.TicTacToe;
 using Server.Services;
 using Server.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Server.Controllers
 {
