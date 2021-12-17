@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Server.Game.TicTacToe
 {
     public static class TicTacToeUtilities
     {
-        private const int PLAYER_OFFSET = 9;
         private const int DIMENSION = 3;
-        private const int MAX_PLAYERS = 2;
         public static Cell[,] ParseBoard(string boardString)
         {
             var output = new Cell[DIMENSION, DIMENSION];
@@ -30,37 +27,38 @@ namespace Server.Game.TicTacToe
             return output;
         }
 
-        public static Cell[,] CommitAction(PlayerMarker player, int serializedAction, Cell[,] board)
+        public static Cell[,] CommitActionToBoard(PlayerMarker player, int serializedAction, Cell[,] board)
         {
             var cell = DeserializeCell(serializedAction);
-            var action = new TicTacToeAction(cell, player);
-            AssertValidAction(action, board);
-            return AlterCell(action, board);
+            cell.OccupiedBy = player;
+            AssertValidAction(cell, board);
+            return AlterCell(cell, board);
         }
 
         public static Cell DeserializeCell(int serializedAction)
         {
-            var maxValue = MAX_PLAYERS * PLAYER_OFFSET;
-            if (serializedAction >= maxValue || serializedAction < 0)
+            var maxValue = DIMENSION * DIMENSION - 1;
+            if (serializedAction > maxValue || serializedAction < 0)
             {
-                throw new InvalidOperationException($"Action Invalid for a {DIMENSION}X{DIMENSION} tic tac toe board with {MAX_PLAYERS} players. Must be a non-negative number less than {maxValue}");
+                throw new InvalidOperationException($"Action Invalid for a {DIMENSION}X{DIMENSION} tic tac toe board. Must be a non-negative number less than {maxValue}");
             }
             var row = serializedAction / DIMENSION;
             var col = serializedAction % DIMENSION;
             return new Cell(row, col);
         }
 
-        public static IEnumerable<TicTacToeAction> GetPossibleMoves(PlayerMarker player, Cell[,] board)
+        public static IEnumerable<Cell> GetOpenCells(Cell[,] board)
         {
             foreach (var cell in board)
             {
-                var action = new TicTacToeAction(cell, player);
-                if (IsValidAction(action, board).valid)
+                if (!cell.IsOccupied)
                 {
-                    yield return action;
+                    yield return cell;
                 }
             }
         }
+
+        public static bool IsWinCondition(PlayerMarker marker, Cell[,] board) => AllRuns(board).Any(run => run.All(c => c.OccupiedBy == marker));
 
         public static IEnumerable<string> PrintHumanReadableBoard(Cell[,] board)
         {
@@ -69,6 +67,7 @@ namespace Server.Game.TicTacToe
                 yield return cell.ToString();
             }
         }
+
         public static string PrintBoard(Cell[,] board)
         {
             string output = "";
@@ -79,10 +78,10 @@ namespace Server.Game.TicTacToe
             return output;
         }
 
-        private static Cell[,] AlterCell(TicTacToeAction action, Cell[,] board)
+        private static Cell[,] AlterCell(Cell action, Cell[,] board)
         {
             var next = CopyBoard(board);
-            next[action.Row, action.Col] = new Cell(action.Row, action.Col, action.CommittedBy);
+            next[action.Row, action.Col] = new Cell(action.Row, action.Col, action.OccupiedBy);
             return next;
         }
 
@@ -98,9 +97,9 @@ namespace Server.Game.TicTacToe
             return temp;
         }
 
-        private static (bool valid, string msg) IsValidAction(TicTacToeAction action, Cell[,] board)
+        private static (bool valid, string msg) IsValidAction(Cell action, Cell[,] board)
         {
-            if (!(action.CommittedBy == PlayerMarker.X || action.CommittedBy == PlayerMarker.O))
+            if (!(action.OccupiedBy == PlayerMarker.X || action.OccupiedBy == PlayerMarker.O))
             {
                 return (false, "invalid player");
             }
@@ -112,13 +111,34 @@ namespace Server.Game.TicTacToe
             return (true, null);
         }
 
-        private static void AssertValidAction(TicTacToeAction action, Cell[,] board)
+        private static void AssertValidAction(Cell action, Cell[,] board)
         {
             var (valid, msg) = IsValidAction(action, board);
             if (!valid)
             {
-                throw new InvalidOperationException($"Cannot commit action: {action.Row}, {action.Col}, {action.CommittedBy}. {msg}");
+                throw new InvalidOperationException($"Cannot commit action: {action.Row}, {action.Col}, {action.OccupiedBy}. {msg}");
             }
+        }
+
+        private static IEnumerable<IEnumerable<Cell>> AllRuns(Cell[,] board)
+        {
+            var range = Enumerable.Range(0, DIMENSION);
+
+            IEnumerable<Cell> rowRun(int col) => range.Select(row => board[row, col]);
+            IEnumerable<Cell> colRun(int row) => range.Select(col => board[row, col]);
+
+            foreach (var i in range)
+            {
+                yield return rowRun(i);
+                yield return colRun(i);
+            }
+
+            IEnumerable<Cell> diagRunOne = range.Select(i => board[i, i]);
+            IEnumerable<Cell> diagRunTwo = range.Reverse().Select((i, j) => board[i, j]);
+
+            yield return diagRunOne;
+            yield return diagRunTwo;
+
         }
     }
 }

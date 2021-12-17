@@ -26,10 +26,11 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/GetPossibleMoves")]
-        public ActionResult<IEnumerable<string>> GetPossibleMoves(string board, PlayerMarker playerMarker)
+        public ActionResult<IEnumerable<string>> GetPossibleMoves(string board)
         {
             var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            return new JsonResult(TicTacToeUtilities.GetPossibleMoves(playerMarker, parsedBoard).Select(m => m.SerializedAction().ToString()));
+            var moveSet = TicTacToeUtilities.GetOpenCells(parsedBoard);
+            return new JsonResult(moveSet);
         }
 
 
@@ -38,7 +39,7 @@ namespace Server.Controllers
         public ActionResult<IEnumerable<string>> CommitAction(string board, int serializedAction, PlayerMarker playerMarker)
         {
             var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            var nextBoard = TicTacToeUtilities.CommitAction(playerMarker, serializedAction, parsedBoard);
+            var nextBoard = TicTacToeUtilities.CommitActionToBoard(playerMarker, serializedAction, parsedBoard);
             return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(nextBoard));
         }
     }

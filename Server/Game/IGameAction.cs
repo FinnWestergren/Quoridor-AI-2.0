@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 
 namespace Server.Game
 {
-    public interface IGameAction<TGame> where TGame : IGame
+    public interface IGameAction
     {
-        int SerializedAction();
+        int SerializedAction(); 
+        Guid CommittedBy { get; set; }
+
     }
 }

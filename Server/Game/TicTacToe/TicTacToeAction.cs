@@ -1,16 +1,17 @@
-﻿namespace Server.Game.TicTacToe
+﻿using System;
+
+namespace Server.Game.TicTacToe
 {
-    public class TicTacToeAction : IGameAction<TicTacToe>
+    public class TicTacToeAction : IGameAction
     {
-        public int Row { get; set; } // 0 1 2
-        public int Col { get; set; } // 0 1 2
-        public PlayerMarker CommittedBy { get; set; }
-        public TicTacToeAction(Cell cell, PlayerMarker committedBy)
+        public Cell Cell { get; set; }
+        public Guid CommittedBy { get; set; }
+        public TicTacToeAction(Cell cell, Guid committedBy)
         {
-            Col = cell.Col;
-            Row = cell.Row;
+            Cell = cell;
             CommittedBy = committedBy;
         }
-        public int SerializedAction() => Col + Row * 3 + ((int)CommittedBy) * 9 ;
+        public int SerializedAction() => Cell.Col + Cell.Row * 3;
+
     }
 }
