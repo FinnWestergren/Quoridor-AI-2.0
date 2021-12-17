@@ -7,46 +7,38 @@ namespace Server.Game.TicTacToe
 {
     public class TicTacToe : IGame
     {
-    }
+        private readonly Stack<Cell[,]> _history;
+        private readonly Guid _xPlayer;
+        private readonly Guid _oPlayer;
 
-    public class Cell
-    {
-        public Cell() { }
-        public Cell(int row, int col, PlayerMarker occupiedBy)
+        public TicTacToe(string boardString, Guid playerOne, Guid playerTwo)
         {
-            Row = row;
-            Col = col;
-            OccupiedBy = occupiedBy;
+            _history = new Stack<Cell[,]>();
+            _history.Push(TicTacToeUtilities.ParseBoard(boardString));
+            _xPlayer = playerOne;
+            _oPlayer = playerTwo;
         }
-        public int Row { get; set; } // 0 1 2
-        public int Col { get; set; } // 0 1 2
 
-        public PlayerMarker OccupiedBy { get; set; }
-        public override string ToString()
+        public void CommitAction(int serializedAction, Guid playerId)
         {
-            return $"row {Row}, col {Col}: {OccupiedBy}";
+            var playerMarker = GetPlayerMarker(playerId);
+            var next = TicTacToeUtilities.CommitAction(playerMarker, serializedAction, CurrentBoard);
+            _history.Push(next);
         }
-        public bool IsOccupied => OccupiedBy != PlayerMarker.None;
-    }
 
-    public class TicTacToeAction : IGameAction<TicTacToe>
-    {
-        public int Row { get; set; } // 0 1 2
-        public int Col { get; set; } // 0 1 2
-        public PlayerMarker CommittedBy { get; set; }
-        public TicTacToeAction(Cell cell, PlayerMarker committedBy)
+        public void UndoAction() => _history.Pop();
+
+        public void Print() => TicTacToeUtilities.PrintBoard(CurrentBoard);
+
+        public Cell[,] CurrentBoard => _history.Peek();
+
+        public PlayerMarker GetPlayerMarker(Guid playerId)
         {
-            Col = cell.Col;
-            Row = cell.Row;
-            CommittedBy = committedBy;
+            if (playerId == _xPlayer) return PlayerMarker.X;
+            if (playerId == _oPlayer) return PlayerMarker.O;
+            throw new Exception($"player ID {playerId} not registered");
         }
-        public int SerializedAction() => Col + Row * 3 + ((int)CommittedBy) * 9 ;
-    }
 
-    public enum PlayerMarker
-    {
-        X = 0,
-        O = 1,
-        None = 2
+        public string GameType() => "TicTacToe";
     }
 }

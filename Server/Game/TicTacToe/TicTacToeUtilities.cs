@@ -22,38 +22,32 @@ namespace Server.Game.TicTacToe
                     'O' => PlayerMarker.O,
                     _ => PlayerMarker.None
                 };
-                var col = index % DIMENSION;
-                var row = index / DIMENSION;
-                output[row, col] = new Cell
-                {
-                    Row = row,
-                    Col = col,
-                    OccupiedBy = occupiedBy
-                };
+                var cell = DeserializeCell(index);
+                output[cell.Row, cell.Col] = cell;
+                output[cell.Row, cell.Col].OccupiedBy = occupiedBy;
                 index++;
             }
             return output;
         }
 
-        public static Cell[,] CommitAction(int serializedAction, Cell[,] board)
+        public static Cell[,] CommitAction(PlayerMarker player, int serializedAction, Cell[,] board)
         {
-            var action = DeserializeAction(serializedAction);
+            var cell = DeserializeCell(serializedAction);
+            var action = new TicTacToeAction(cell, player);
             AssertValidAction(action, board);
             return AlterCell(action, board);
         }
 
-        public static TicTacToeAction DeserializeAction(int serializedAction)
+        public static Cell DeserializeCell(int serializedAction)
         {
             var maxValue = MAX_PLAYERS * PLAYER_OFFSET;
             if (serializedAction >= maxValue || serializedAction < 0)
             {
                 throw new InvalidOperationException($"Action Invalid for a {DIMENSION}X{DIMENSION} tic tac toe board with {MAX_PLAYERS} players. Must be a non-negative number less than {maxValue}");
             }
-            var committedBy = serializedAction / PLAYER_OFFSET;
-            var row = (serializedAction % PLAYER_OFFSET) / DIMENSION;
+            var row = serializedAction / DIMENSION;
             var col = serializedAction % DIMENSION;
-            var cell = new Cell(row, col, (PlayerMarker)committedBy);
-            return new TicTacToeAction(cell, (PlayerMarker)committedBy);
+            return new Cell(row, col);
         }
 
         public static IEnumerable<TicTacToeAction> GetPossibleMoves(PlayerMarker player, Cell[,] board)
@@ -61,19 +55,28 @@ namespace Server.Game.TicTacToe
             foreach (var cell in board)
             {
                 var action = new TicTacToeAction(cell, player);
-                if (IsValidAction(action, board))
+                if (IsValidAction(action, board).valid)
                 {
                     yield return action;
                 }
             }
         }
 
-        public static IEnumerable<string> PrintBoard(Cell[,] board)
+        public static IEnumerable<string> PrintHumanReadableBoard(Cell[,] board)
         {
             foreach (var cell in board)
             {
                 yield return cell.ToString();
             }
+        }
+        public static string PrintBoard(Cell[,] board)
+        {
+            string output = "";
+            foreach (var cell in board)
+            {
+                output = $"{output}{cell.OccupiedBy}";
+            }
+            return output;
         }
 
         private static Cell[,] AlterCell(TicTacToeAction action, Cell[,] board)
@@ -95,20 +98,26 @@ namespace Server.Game.TicTacToe
             return temp;
         }
 
-        private static bool IsValidAction(TicTacToeAction action, Cell[,] board)
+        private static (bool valid, string msg) IsValidAction(TicTacToeAction action, Cell[,] board)
         {
             if (!(action.CommittedBy == PlayerMarker.X || action.CommittedBy == PlayerMarker.O))
             {
-                return false;
+                return (false, "invalid player");
             }
-            return !board[action.Row, action.Col].IsOccupied;
+            if (board[action.Row, action.Col].IsOccupied)
+            {
+                return (false, "cell occupied");
+            }
+
+            return (true, null);
         }
 
         private static void AssertValidAction(TicTacToeAction action, Cell[,] board)
         {
-            if (!IsValidAction(action, board))
+            var (valid, msg) = IsValidAction(action, board);
+            if (!valid)
             {
-                throw new InvalidOperationException($"Cannot commit action: {action.Row}, {action.Col}, {action.CommittedBy}");
+                throw new InvalidOperationException($"Cannot commit action: {action.Row}, {action.Col}, {action.CommittedBy}. {msg}");
             }
         }
     }

@@ -21,7 +21,7 @@ namespace Server.Controllers
         public ActionResult<IEnumerable<string>> ValidateBoard(string board)
         {
             var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            return new JsonResult(TicTacToeUtilities.PrintBoard(parsedBoard));
+            return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(parsedBoard));
         }
 
         [HttpGet]
@@ -35,11 +35,11 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/CommitAction")]
-        public ActionResult<IEnumerable<string>> CommitAction(string board, int serializedAction)
+        public ActionResult<IEnumerable<string>> CommitAction(string board, int serializedAction, PlayerMarker playerMarker)
         {
             var parsedBoard = TicTacToeUtilities.ParseBoard(board);
-            var nextBoard = TicTacToeUtilities.CommitAction(serializedAction, parsedBoard);
-            return new JsonResult(TicTacToeUtilities.PrintBoard(nextBoard));
+            var nextBoard = TicTacToeUtilities.CommitAction(playerMarker, serializedAction, parsedBoard);
+            return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(nextBoard));
         }
     }
 }
