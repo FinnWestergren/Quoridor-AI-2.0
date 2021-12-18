@@ -15,6 +15,7 @@ const renderTile = (row, col, occupant) => {
     const rightX = spacing() * (col + 1);
     const upperY = spacing() * row;
     const lowerY = spacing() * (row + 1);
+
     const mouseWithinBounds = () => {
         const satX = mouseX > leftX && mouseX < rightX;
         const satY = mouseY > upperY && mouseY < lowerY;
@@ -30,13 +31,15 @@ const renderTile = (row, col, occupant) => {
     }
 
     let char = '';
-
     if (occupant == 0) char = 'X';
     if (occupant == 1) char = 'O';
+    push();
     fill(0);
-    textSize(24);
+    textSize(64);
+    textFont('Georgia');
     textAlign(CENTER, CENTER);
     text(char, leftX + spacing() * 0.5, upperY + spacing() * 0.5)
+    pop();
 }
 
 export const draw = (board) => {
