@@ -68,10 +68,11 @@ namespace Server.Game.TicTacToe
         {
             var playerMarker = GetPlayerMarker(playerId);
             var enemyMarker = playerMarker == PlayerMarker.X ? PlayerMarker.O : PlayerMarker.X;
+            var openCellsCount = TicTacToeUtilities.GetOpenCells(CurrentBoard).Count();
             var win = TicTacToeUtilities.IsWinCondition(playerMarker, CurrentBoard);
-            if (win) return 1;
+            if (win) return 1 + openCellsCount; // favor early wins
             var loss = TicTacToeUtilities.IsWinCondition(enemyMarker, CurrentBoard);
-            if (loss) return -1;
+            if (loss) return -1 - openCellsCount; // avoid early loses
             return 0;
         }
     }
