@@ -1,5 +1,5 @@
 import { NewGame } from "../api/TicTacToe.api.js";
-import { getState, updateState } from "../state.js";
+import { updateState } from "../state.js";
 import * as tictactoe from "./tictactoe.js";
 
 
@@ -9,13 +9,12 @@ function setup() {
 }
 
 function draw() {
-    const state = getState();
     push();
     fill(255);
     noStroke();
     rect(0, 0, width, height);
     pop();
-    tictactoe.draw(state?.currentBoard);
+    tictactoe.draw();
 }
 
 window.setup = setup;

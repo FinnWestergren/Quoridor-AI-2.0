@@ -1,50 +1,77 @@
+import { getState } from "../state.js";
+
 const spacing = () => width * 0.33;
 
 const drawVerticalLine = (x) => line(x, 0, x, height);
 const drawHorizontalLine = (y) => line(0, y, width, y);
 
 const drawBoard = () => {
-    drawVerticalLine(spacing());
-    drawVerticalLine(spacing() * 2);
-    drawHorizontalLine(spacing());
-    drawHorizontalLine(spacing() * 2);
+    const s = spacing();
+    drawVerticalLine(s);
+    drawVerticalLine(s * 2);
+    drawHorizontalLine(s);
+    drawHorizontalLine(s * 2);
 }
 
-const renderTile = (row, col, occupant) => {
-    const leftX = spacing() * col;
-    const rightX = spacing() * (col + 1);
-    const upperY = spacing() * row;
-    const lowerY = spacing() * (row + 1);
-
-    const mouseWithinBounds = () => {
-        const satX = mouseX > leftX && mouseX < rightX;
-        const satY = mouseY > upperY && mouseY < lowerY;
-        return satX && satY;
+const boundaries = (row, col) => {
+    const s = spacing();
+    return {
+        leftX: s * col,
+        rightX: s * (col + 1),
+        upperY: s * row,
+        lowerY: s * (row + 1),
+        centerX: s * (col + 0.5),
+        centerY: s * (row + 0.5)
     }
+}
 
-    if (mouseWithinBounds()) {
-        push();
-        noStroke();
-        fill(255, 204, 0);
-        rect(leftX, upperY, spacing(), spacing());
-        pop();
-    }
+const mouseWithinBounds = (tileBoundaries) => {
+    const satX = mouseX > tileBoundaries.leftX && mouseX < tileBoundaries.rightX;
+    const satY = mouseY > tileBoundaries.upperY && mouseY < tileBoundaries.lowerY;
+    return satX && satY;
+}
 
+const mousedOverTile = (board) => board.find(t => mouseWithinBounds(boundaries(t.row,t.col)));
+
+const renderTile = ({row, col, occupiedBy}) => {
+    const tileBoundaries = boundaries(row,col);
     let char = '';
-    if (occupant == 0) char = 'X';
-    if (occupant == 1) char = 'O';
+    if (occupiedBy == 0) char = 'X';
+    if (occupiedBy == 1) char = 'O';
     push();
     fill(0);
     textSize(64);
     textFont('Georgia');
     textAlign(CENTER, CENTER);
-    text(char, leftX + spacing() * 0.5, upperY + spacing() * 0.5)
+    text(char, tileBoundaries.centerX, tileBoundaries.centerY)
     pop();
 }
 
-export const draw = (board) => {
-    if (board) {
-        board.forEach(tile => renderTile(tile.row, tile.col, tile.occupiedBy))
+const fillTile = ({row, col, occupiedBy}) => {
+    const tileBoundaries = boundaries(row,col);
+    push();
+    noStroke();
+    occupiedBy == 2 ? fill(255, 204, 0) : fill(255, 100, 100);
+    rect(tileBoundaries.leftX, tileBoundaries.upperY, spacing(), spacing());
+    pop();
+}
+
+export const draw = () => {
+    const state = getState();
+    if (state?.currentBoard) {
+        const mousedTile = mousedOverTile(state.currentBoard);
+        if(mousedTile) fillTile(mousedTile);
+        state.currentBoard.forEach(tile => {
+            renderTile(tile);
+        });
     }
     drawBoard();
 }
+
+window.addEventListener("click", () => {
+    const state = getState();
+    if (state?.currentBoard) {
+        const mousedTile = mousedOverTile(state.currentBoard);
+        mousedTile && console.log(mousedTile);
+    }
+});
