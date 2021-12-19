@@ -1,13 +1,30 @@
-const key = "uncletony_420_69"
+const gameStateKey = "uncletony_420_69"
+const selectedPlayerKey = "selectedPlayerKey"
 
 function getState() {
-    const outString = localStorage.getItem(key);
-    return JSON.parse(outString);
+    return window[gameStateKey];
 }
 
 export function updateState(newState) {
-    localStorage.setItem(key, JSON.stringify(newState));
+    window[gameStateKey] = newState;
 }
+
+export function selectPlayer(character) {
+    console.log(character)
+    if (character == 'X') {
+        window[selectedPlayerKey] = getPlayerOne();
+    }
+    else {
+        window[selectedPlayerKey] = getPlayerTwo();
+    }
+}
+
+export function clearSelectedPlayer() {
+    window[selectedPlayerKey] = null
+}
+
+export const getHumanPlayer = () => window[selectedPlayerKey];
+export const getComputerPlayer = () => getHumanPlayer() == getPlayerOne() ? getPlayerTwo() : getPlayerOne();
 
 export const getBoard = () => getState()?.currentBoard; 
 export const getGameId = () => getState()?.gameId;
@@ -21,3 +38,6 @@ export const getWinner = () => {
     return winner === playerOne ? 'X' : 'O';
 }
 
+export const isBoardEmpty = () => getBoard() && !getBoard().some(t => t.isOccupied);
+const isBoardfull = () => getBoard() && !getBoard().some(t => !t.isOccupied);
+export const isGameOver = () => getWinner() || isBoardfull();

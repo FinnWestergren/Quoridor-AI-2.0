@@ -1,4 +1,4 @@
-import { updateState, getGameId, getPlayerOne } from "../state/ticTacToe.state.js";
+import { updateState, getGameId, getComputerPlayer, getHumanPlayer, clearSelectedPlayer } from "../state/ticTacToe.state.js";
 
 const instance = axios.create({
     baseURL: 'https://localhost/UncleTony/TicTacToe',
@@ -6,6 +6,7 @@ const instance = axios.create({
   });
 
 export async function NewGame() {
+    clearSelectedPlayer();
     const newGame = await instance.get('NewGame');
     updateState(newGame.data);
     return true;
@@ -14,7 +15,7 @@ export async function NewGame() {
 export async function CommitAction(tileNumber) {
     const data = {
         gameId: getGameId(),
-        playerId: getPlayerOne(),
+        playerId: getHumanPlayer(),
         serializedAction: tileNumber
     }
 
@@ -26,7 +27,7 @@ export async function CommitAction(tileNumber) {
 export async function GetMinimaxAction() {
     const params = {
         gameId: getGameId(),
-        player: 'O'
+        playerId: getComputerPlayer()
     };
     const resp = await instance.get('GetMinimaxMove',  { params });
     updateState(resp.data);

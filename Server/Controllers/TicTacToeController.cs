@@ -68,19 +68,19 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/IsWinCondition")]
-        public ActionResult<IEnumerable<string>> IsWinCondition(Guid gameId, PlayerMarker player)
+        public ActionResult<IEnumerable<string>> IsWinCondition(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var isWin = TicTacToeUtilities.IsWinCondition(player, game.CurrentBoard);
+            var playerMarker = playerId == game.PlayerOne ? PlayerMarker.X : PlayerMarker.O;
+            var isWin = TicTacToeUtilities.IsWinCondition(playerMarker, game.CurrentBoard);
             return new JsonResult(isWin);
         }
 
         [HttpGet]
         [Route("[controller]/GetMinimaxMove")]
-        public ActionResult<TicTacToeGameViewModel> GetMinimaxMove(Guid gameId, PlayerMarker player)
+        public ActionResult<TicTacToeGameViewModel> GetMinimaxMove(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var playerId = player == PlayerMarker.X ? game.PlayerOne : game.PlayerTwo;
             var agent = new MiniMaxAgent(playerId);
             var move = agent.GetNextAction(game);
             if (move != null)
