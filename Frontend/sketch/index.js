@@ -1,11 +1,12 @@
 import { NewGame } from "../api/TicTacToe.api.js";
-import { updateState } from "../state.js";
 import * as tictactoe from "./tictactoe.js";
 
 
-function setup() {
+async function setup() {
     createCanvas(400, 400);
-    NewGame().then(resp => updateState(resp.data));
+    textFont('Georgia');
+    textSize(64);
+    await NewGame();
 }
 
 function draw() {

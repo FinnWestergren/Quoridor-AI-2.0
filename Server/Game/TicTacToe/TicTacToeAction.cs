@@ -11,7 +11,7 @@ namespace Server.Game.TicTacToe
             Cell = cell;
             CommittedBy = committedBy;
         }
-        public int SerializedAction => Cell.Col + Cell.Row * 3;
+        public int SerializedAction => Cell.SerializedCell;
 
     }
 }

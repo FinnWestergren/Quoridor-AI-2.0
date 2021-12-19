@@ -1,11 +1,19 @@
-import { getState } from "../state.js";
+import { getBoard, getWinner } from "../state/ticTacToe.state.js";
+import { CommitAction, GetMinimaxAction, NewGame } from "../api/TicTacToe.api.js";
 
 const spacing = () => width * 0.33;
 
 const drawVerticalLine = (x) => line(x, 0, x, height);
 const drawHorizontalLine = (y) => line(0, y, width, y);
 
-const drawBoard = () => {
+const drawBoard = (board) => {
+    const mousedTile = mousedOverTile(board);
+    if(mousedTile) fillTile(mousedTile);
+
+    board.forEach(tile => {
+        renderTile(tile);
+    });
+
     const s = spacing();
     drawVerticalLine(s);
     drawVerticalLine(s * 2);
@@ -40,8 +48,6 @@ const renderTile = ({row, col, occupiedBy}) => {
     if (occupiedBy == 1) char = 'O';
     push();
     fill(0);
-    textSize(64);
-    textFont('Georgia');
     textAlign(CENTER, CENTER);
     text(char, tileBoundaries.centerX, tileBoundaries.centerY)
     pop();
@@ -56,22 +62,57 @@ const fillTile = ({row, col, occupiedBy}) => {
     pop();
 }
 
-export const draw = () => {
-    const state = getState();
-    if (state?.currentBoard) {
-        const mousedTile = mousedOverTile(state.currentBoard);
-        if(mousedTile) fillTile(mousedTile);
-        state.currentBoard.forEach(tile => {
-            renderTile(tile);
-        });
-    }
-    drawBoard();
+const drawWinner = (winner) => overLay(`${winner} Wins!`);
+
+const drawTieGame = () => overLay('Tie Game');
+
+const overLay = (displayText) => {
+    push();
+    fill(255,255,255,200);
+    noStroke();
+    rect(0,0,width,height);
+    fill(255, 100, 100);
+    textAlign(CENTER, CENTER);
+    text(displayText, width*0.5, height*0.5);
+    textSize(20);
+    text(`press any key to play again`, width*0.5, height*0.7);
+    pop();
 }
 
-window.addEventListener("click", () => {
-    const state = getState();
-    if (state?.currentBoard) {
-        const mousedTile = mousedOverTile(state.currentBoard);
-        mousedTile && console.log(mousedTile);
+const isTieGame = (board) => board && !board.some(t => !t.isOccupied);
+
+export const draw = () => {
+    const board = getBoard();
+    const winner = getWinner();
+    if (board) {
+        drawBoard(board);
+    }
+    if (winner) {
+        drawWinner(winner);
+    }
+    if (isTieGame(board)){
+        drawTieGame();
+    }
+}
+
+window.addEventListener('click', async () => {
+    const board = getBoard();
+    if (board) {
+        const mousedTile = mousedOverTile(board);
+        if (mousedTile) {
+            const success = await CommitAction(mousedTile.serializedCell);
+            if (success){
+                await GetMinimaxAction();
+            }
+        }
+    }
+});
+
+
+window.addEventListener('keydown', async () => {
+    const winner = getWinner();
+    const board = getBoard();
+    if (winner || isTieGame(board)) {
+        await NewGame();
     }
 });

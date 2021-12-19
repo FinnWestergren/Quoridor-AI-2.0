@@ -10,6 +10,7 @@ namespace Server.ViewModels
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
         public Guid GameId { get; set; }
+        public Guid? Winner { get; set; }
 
         public static TicTacToeGameViewModel FromGame(TicTacToe game)
         {
@@ -22,12 +23,19 @@ namespace Server.ViewModels
                 }
             }
 
+            Guid? winner = null;
+            var value = game.GetBoardValue(game.PlayerOne);
+            if (value > 0) winner = game.PlayerOne;
+            if (value < 0) winner = game.PlayerTwo;
+
+
             return new TicTacToeGameViewModel
             {
                 CurrentBoard = board(),
                 PlayerOne = game.PlayerOne,
                 PlayerTwo = game.PlayerTwo,
-                GameId = game.GameId
+                GameId = game.GameId,
+                Winner = winner
             };
         }
     }

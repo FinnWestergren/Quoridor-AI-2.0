@@ -8,6 +8,7 @@ namespace Server
 {
     public class Startup
     {
+        private const string CORS_ORIGINS = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -20,6 +21,15 @@ namespace Server
         {
             services.AddControllers();
             services.AddMemoryCache();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: CORS_ORIGINS, builder =>
+                {
+                    builder.WithOrigins("localhost")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,12 +44,15 @@ namespace Server
 
             app.UseRouting();
 
+            app.UseCors(CORS_ORIGINS);
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }

@@ -40,11 +40,12 @@ namespace Server.Controllers
 
 
         [HttpPost]
+        [Consumes ("application/json")]
         [Route("[controller]/CommitAction")]
-        public ActionResult<IEnumerable<string>> CommitAction(Guid gameId, int serializedAction, Guid playerId)
+        public ActionResult<IEnumerable<string>> CommitAction(ActionInputModel test)
         {
-            var game = _presentationService.GetGame(gameId);
-            game.CommitAction(serializedAction, playerId);
+            var game = _presentationService.GetGame(test.GameId);
+            game.CommitAction(test.SerializedAction, test.PlayerId);
             return new JsonResult(TicTacToeGameViewModel.FromGame(game));
         }
 
@@ -74,7 +75,7 @@ namespace Server.Controllers
             return new JsonResult(isWin);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("[controller]/GetMinimaxMove")]
         public ActionResult<TicTacToeGameViewModel> GetMinimaxMove(Guid gameId, PlayerMarker player)
         {
@@ -89,6 +90,12 @@ namespace Server.Controllers
             }
             return new JsonResult(TicTacToeGameViewModel.FromGame(game));
         }
+    }
 
+    public class ActionInputModel
+    {
+        public Guid GameId { get; set; }
+        public Guid PlayerId { get; set; }
+        public int SerializedAction { get; set; }
     }
 }
