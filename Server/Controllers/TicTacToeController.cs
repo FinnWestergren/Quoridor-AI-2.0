@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Server.Game;
 using Server.Game.TicTacToe;
 using Server.Players.Agent;
 using Server.Services;
+using Server.Utilities;
 using Server.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Server.Controllers
 {
@@ -81,14 +84,33 @@ namespace Server.Controllers
         public ActionResult<TicTacToeGameViewModel> GetMinimaxMove(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var agent = new MiniMaxAgent(playerId);
-            var move = agent.GetNextAction(game);
+            AssertABWorks(game, playerId);
+            var move = GetMinimaxMove(playerId, game).action;
             if (move != null)
             {
                 game.CommitAction(move.SerializedAction, playerId);
                 _commandService.SaveGame(game);
             }
             return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+        }
+
+        private void AssertABWorks(TicTacToe game, Guid playerId)
+        {
+            var AB_ON = GetMinimaxMove(playerId, game);
+            var AB_OFF = GetMinimaxMove(playerId, game, false);
+            Debug.WriteLine($"AB ON: {AB_ON.nodesSearched} Nodes, {AB_ON.time}ms");
+            Debug.WriteLine($"AB OFF: {AB_OFF.nodesSearched} Nodes, {AB_OFF.time}ms");
+            if (AB_OFF.action?.SerializedAction != AB_ON.action?.SerializedAction)
+            {
+                throw new Exception("review your AB pruning, chum");
+            }
+        }
+
+        private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, TicTacToe game, bool ABPrune = true)
+        {
+            var agent = new MiniMaxAgent(playerId, isABPruningEnabled: ABPrune);
+            var time = ActionTimer.TimeFunction(() => agent.GetNextAction(game), out var action);
+            return (action, agent.NodeCount, time);
         }
     }
 
