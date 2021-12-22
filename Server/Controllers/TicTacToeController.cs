@@ -84,7 +84,7 @@ namespace Server.Controllers
         public ActionResult<TicTacToeGameViewModel> GetMinimaxMove(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            AssertABWorks(game, playerId);
+            // AssertABWorks(game, playerId);
             var move = GetMinimaxMove(playerId, game).action;
             if (move != null)
             {
@@ -94,7 +94,7 @@ namespace Server.Controllers
             return new JsonResult(TicTacToeGameViewModel.FromGame(game));
         }
 
-        private void AssertABWorks(TicTacToe game, Guid playerId)
+        private void AssertABWorks(IGame game, Guid playerId)
         {
             var AB_ON = GetMinimaxMove(playerId, game);
             var AB_OFF = GetMinimaxMove(playerId, game, false);
@@ -106,7 +106,7 @@ namespace Server.Controllers
             }
         }
 
-        private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, TicTacToe game, bool ABPrune = true)
+        private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, IGame game, bool ABPrune = true)
         {
             var agent = new MiniMaxAgent(playerId, isABPruningEnabled: ABPrune);
             var time = ActionTimer.TimeFunction(() => agent.GetNextAction(game), out var action);
