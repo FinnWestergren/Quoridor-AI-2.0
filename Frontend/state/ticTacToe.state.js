@@ -1,5 +1,10 @@
 const gameStateKey = "uncletony_420_69"
 const selectedPlayerKey = "selectedPlayerKey"
+const gameState = "gameState"
+
+const NOT_STARTED = "NOT_STARTED";
+const IN_PROGRESS = "IN_PROGRESS";
+const GAME_OVER = "GAME_OVER";
 
 function getState() {
     return window[gameStateKey];
@@ -7,6 +12,9 @@ function getState() {
 
 export function updateState(newState) {
     window[gameStateKey] = newState;
+    if(getWinner() || !getBoard().find(t => !t.isOccupied)) {
+        setGameOver();
+    }
 }
 
 export function selectPlayer(character) {
@@ -18,6 +26,7 @@ export function selectPlayer(character) {
         window[selectedPlayerKey] = getPlayerTwo();
     }
 }
+
 
 export function clearSelectedPlayer() {
     window[selectedPlayerKey] = null
@@ -38,6 +47,13 @@ export const getWinner = () => {
     return winner === playerOne ? 'X' : 'O';
 }
 
-export const isBoardEmpty = () => getBoard() && !getBoard().some(t => t.isOccupied);
-const isBoardfull = () => getBoard() && !getBoard().some(t => !t.isOccupied);
-export const isGameOver = () => getWinner() || isBoardfull();
+
+export const isGameNotStarted = () => window[gameState] == NOT_STARTED;
+export const setGameNotStarted = () => {
+    clearSelectedPlayer();
+    window[gameState] = NOT_STARTED;
+}
+export const isGameInProgress = () => window[gameState] == IN_PROGRESS;
+export const setGameInProgress = () => window[gameState] = IN_PROGRESS;
+export const isGameOver = ()  => window[gameState] == GAME_OVER;
+export const setGameOver = ()  => window[gameState] = GAME_OVER;

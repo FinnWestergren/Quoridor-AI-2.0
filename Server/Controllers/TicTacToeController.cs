@@ -84,7 +84,7 @@ namespace Server.Controllers
         public ActionResult<TicTacToeGameViewModel> GetMinimaxMove(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            // AssertABWorks(game, playerId);
+            AssertABWorks(game, playerId);
             var move = GetMinimaxMove(playerId, game).action;
             if (move != null)
             {
