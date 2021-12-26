@@ -6,7 +6,7 @@ namespace Server.ViewModels
 {
     public class TicTacToeGameViewModel
     {
-        public IEnumerable<Cell> CurrentBoard { get; set; }
+        public IEnumerable<TicTacToeCell> CurrentBoard { get; set; }
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
         public Guid GameId { get; set; }
@@ -15,7 +15,7 @@ namespace Server.ViewModels
         public static TicTacToeGameViewModel FromGame(TicTacToe game)
         {
 
-            IEnumerable<Cell> board()
+            IEnumerable<TicTacToeCell> board()
             { 
                 foreach(var c in game.CurrentBoard)
                 {

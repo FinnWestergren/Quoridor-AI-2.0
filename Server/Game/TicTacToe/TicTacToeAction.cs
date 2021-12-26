@@ -4,9 +4,9 @@ namespace Server.Game.TicTacToe
 {
     public class TicTacToeAction : IGameAction
     {
-        public Cell Cell { get; set; }
+        public TicTacToeCell Cell { get; set; }
         public Guid CommittedBy { get; set; }
-        public TicTacToeAction(Cell cell, Guid committedBy)
+        public TicTacToeAction(TicTacToeCell cell, Guid committedBy)
         {
             Cell = cell;
             CommittedBy = committedBy;

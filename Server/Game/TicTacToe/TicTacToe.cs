@@ -7,14 +7,14 @@ namespace Server.Game.TicTacToe
 {
     public class TicTacToe : IGame
     {
-        private readonly Stack<Cell[,]> _history;
+        private readonly Stack<TicTacToeCell[,]> _history;
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
         public Guid GameId { get; set; }
 
         public TicTacToe(string boardString = null)
         {
-            _history = new Stack<Cell[,]>();
+            _history = new Stack<TicTacToeCell[,]>();
             var board = boardString == null ? TicTacToeUtilities.EmptyBoard : TicTacToeUtilities.ParseBoard(boardString);
             _history.Push(board);
             PlayerOne = Guid.NewGuid();
@@ -24,7 +24,7 @@ namespace Server.Game.TicTacToe
 
         public TicTacToe(string boardString, Guid playerOne, Guid playerTwo, Guid gameId)
         {
-            _history = new Stack<Cell[,]>();
+            _history = new Stack<TicTacToeCell[,]>();
             _history.Push(TicTacToeUtilities.ParseBoard(boardString));
             PlayerOne = playerOne;
             PlayerTwo = playerTwo;
@@ -44,7 +44,7 @@ namespace Server.Game.TicTacToe
 
         public void Print() => TicTacToeUtilities.PrintBoard(CurrentBoard);
 
-        public Cell[,] CurrentBoard => _history.Peek();
+        public TicTacToeCell[,] CurrentBoard => _history.Peek();
 
         public PlayerMarker GetPlayerMarker(Guid playerId)
         {

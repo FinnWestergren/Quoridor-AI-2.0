@@ -8,11 +8,11 @@ namespace Server.Game.TicTacToe
     {
         private const int DIMENSION = 3;
 
-        public static Cell[,] EmptyBoard => ParseBoard("---------"); // kinda hacky but saves several lines of redundant looking code
+        public static TicTacToeCell[,] EmptyBoard => ParseBoard("---------"); // kinda hacky but saves several lines of redundant looking code
 
-        public static Cell[,] ParseBoard(string boardString)
+        public static TicTacToeCell[,] ParseBoard(string boardString)
         {
-            var output = new Cell[DIMENSION, DIMENSION];
+            var output = new TicTacToeCell[DIMENSION, DIMENSION];
             int index = 0;
             foreach (var c in boardString.ToUpper())
             {
@@ -30,7 +30,7 @@ namespace Server.Game.TicTacToe
             return output;
         }
 
-        public static Cell[,] CommitActionToBoard(PlayerMarker player, int serializedAction, Cell[,] board)
+        public static TicTacToeCell[,] CommitActionToBoard(PlayerMarker player, int serializedAction, TicTacToeCell[,] board)
         {
             var cell = DeserializeCell(serializedAction);
             cell.OccupiedBy = player;
@@ -38,7 +38,7 @@ namespace Server.Game.TicTacToe
             return AlterCell(cell, board);
         }
 
-        public static Cell DeserializeCell(int serializedAction)
+        public static TicTacToeCell DeserializeCell(int serializedAction)
         {
             var maxValue = DIMENSION * DIMENSION - 1;
             if (serializedAction > maxValue || serializedAction < 0)
@@ -47,10 +47,10 @@ namespace Server.Game.TicTacToe
             }
             var row = serializedAction / DIMENSION;
             var col = serializedAction % DIMENSION;
-            return new Cell(row, col);
+            return new TicTacToeCell(row, col);
         }
 
-        public static IEnumerable<Cell> GetOpenCells(Cell[,] board)
+        public static IEnumerable<TicTacToeCell> GetOpenCells(TicTacToeCell[,] board)
         {
             foreach (var cell in board)
             {
@@ -61,7 +61,7 @@ namespace Server.Game.TicTacToe
             }
         }
 
-        public static (bool valid, string msg) IsValidAction(Cell action, Cell[,] board)
+        public static (bool valid, string msg) IsValidAction(TicTacToeCell action, TicTacToeCell[,] board)
         {
             if (!(action.OccupiedBy == PlayerMarker.X || action.OccupiedBy == PlayerMarker.O))
             {
@@ -76,9 +76,9 @@ namespace Server.Game.TicTacToe
         }
 
 
-        public static bool IsWinCondition(PlayerMarker marker, Cell[,] board) => AllRuns(board).Any(run => run.All(c => c.OccupiedBy == marker));
+        public static bool IsWinCondition(PlayerMarker marker, TicTacToeCell[,] board) => AllRuns(board).Any(run => run.All(c => c.OccupiedBy == marker));
 
-        public static IEnumerable<string> PrintHumanReadableBoard(Cell[,] board)
+        public static IEnumerable<string> PrintHumanReadableBoard(TicTacToeCell[,] board)
         {
             var range = Enumerable.Range(0, DIMENSION);
             IEnumerable<char> rowRun(int row) => range.Select(col => board[row, col].PrintCell);
@@ -89,7 +89,7 @@ namespace Server.Game.TicTacToe
             }
         }
 
-        public static string PrintBoard(Cell[,] board)
+        public static string PrintBoard(TicTacToeCell[,] board)
         {
             string output = "";
             foreach (var cell in board)
@@ -98,26 +98,26 @@ namespace Server.Game.TicTacToe
             }
             return output;
         }
-        private static Cell[,] AlterCell(Cell action, Cell[,] board)
+        private static TicTacToeCell[,] AlterCell(TicTacToeCell action, TicTacToeCell[,] board)
         {
             var next = CopyBoard(board);
-            next[action.Row, action.Col] = new Cell(action.Row, action.Col, action.OccupiedBy);
+            next[action.Row, action.Col] = new TicTacToeCell(action.Row, action.Col, action.OccupiedBy);
             return next;
         }
 
-        private static Cell[,] CopyBoard(Cell[,] board)
+        private static TicTacToeCell[,] CopyBoard(TicTacToeCell[,] board)
         {
-            var temp = new Cell[DIMENSION, DIMENSION];
+            var temp = new TicTacToeCell[DIMENSION, DIMENSION];
             foreach (var i in Enumerable.Range(0, DIMENSION))
                 foreach (var j in Enumerable.Range(0, DIMENSION))
                 {
                     var prev = board[i, j];
-                    temp[i, j] = new Cell(prev.Row, prev.Col, prev.OccupiedBy);
+                    temp[i, j] = new TicTacToeCell(prev.Row, prev.Col, prev.OccupiedBy);
                 }
             return temp;
         }
 
-        private static void AssertValidAction(Cell action, Cell[,] board)
+        private static void AssertValidAction(TicTacToeCell action, TicTacToeCell[,] board)
         {
             var (valid, msg) = IsValidAction(action, board);
             if (!valid)
@@ -126,12 +126,12 @@ namespace Server.Game.TicTacToe
             }
         }
 
-        private static IEnumerable<IEnumerable<Cell>> AllRuns(Cell[,] board)
+        private static IEnumerable<IEnumerable<TicTacToeCell>> AllRuns(TicTacToeCell[,] board)
         {
             var range = Enumerable.Range(0, DIMENSION);
 
-            IEnumerable<Cell> rowRun(int col) => range.Select(row => board[row, col]);
-            IEnumerable<Cell> colRun(int row) => range.Select(col => board[row, col]);
+            IEnumerable<TicTacToeCell> rowRun(int col) => range.Select(row => board[row, col]);
+            IEnumerable<TicTacToeCell> colRun(int row) => range.Select(col => board[row, col]);
 
             foreach (var i in range)
             {
@@ -139,8 +139,8 @@ namespace Server.Game.TicTacToe
                 yield return colRun(i);
             }
 
-            IEnumerable<Cell> diagRunOne = range.Select(i => board[i, i]);
-            IEnumerable<Cell> diagRunTwo = range.Reverse().Select((i, j) => board[i, j]);
+            IEnumerable<TicTacToeCell> diagRunOne = range.Select(i => board[i, i]);
+            IEnumerable<TicTacToeCell> diagRunTwo = range.Reverse().Select((i, j) => board[i, j]);
 
             yield return diagRunOne;
             yield return diagRunTwo;

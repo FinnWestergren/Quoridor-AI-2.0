@@ -53,9 +53,9 @@ namespace Tests.Game
         public void CatchesInvalidActions()
         {
             var board = TicTacToeUtilities.ParseBoard("XOX---XOX");
-            var action1 = new Cell(0,0,PlayerMarker.X);
+            var action1 = new TicTacToeCell(0,0,PlayerMarker.X);
             Assert.IsFalse(TicTacToeUtilities.IsValidAction(action1, board).valid);
-            var action2 = new Cell(1,1,PlayerMarker.None);
+            var action2 = new TicTacToeCell(1,1,PlayerMarker.None);
             Assert.IsFalse(TicTacToeUtilities.IsValidAction(action2, board).valid);
         }
 
@@ -63,7 +63,7 @@ namespace Tests.Game
         public void AllowsValidActions()
         {
             var board = TicTacToeUtilities.ParseBoard("XOX---XOX");
-            var action = new Cell(1, 1, PlayerMarker.X);
+            var action = new TicTacToeCell(1, 1, PlayerMarker.X);
             Assert.IsTrue(TicTacToeUtilities.IsValidAction(action, board).valid);
         }
 

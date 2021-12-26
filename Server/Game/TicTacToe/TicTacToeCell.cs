@@ -1,13 +1,13 @@
 ﻿namespace Server.Game.TicTacToe
 {
-    public class Cell
+    public class TicTacToeCell
     {
-        public Cell(int row, int col)
+        public TicTacToeCell(int row, int col)
         {
             Row = row;
             Col = col;
         }
-        public Cell(int row, int col, PlayerMarker occupiedBy)
+        public TicTacToeCell(int row, int col, PlayerMarker occupiedBy)
         {
             Row = row;
             Col = col;
