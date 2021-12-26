@@ -5,8 +5,8 @@ namespace Server.Game
 {
     public interface IGame
     {
-        Guid PlayerOne { get; set; }
-        Guid PlayerTwo { get; set; }
+        Guid PlayerOne { get; }
+        Guid PlayerTwo { get; }
         Guid GameId { get; set; }
         void CommitAction(int serializedAction, Guid playerId);
         void UndoAction();
