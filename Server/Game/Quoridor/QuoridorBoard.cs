@@ -9,5 +9,6 @@ namespace Server.Game.Quoridor
     {
         public WallOrientation[,] Walls { get; set; }
         public QuoridorCell[,] Cells { get; set; }
+        public Dictionary<Guid, int> PlayerWallCounts { get; set; }
     }
 }

@@ -6,7 +6,7 @@ namespace Server.Game.TicTacToe
 {
     public static class TicTacToeUtilities
     {
-        private const int DIMENSION = 3;
+        public const int DIMENSION = 3;
 
         public static TicTacToeCell[,] EmptyBoard => ParseBoard("---------"); // kinda hacky but saves several lines of redundant looking code
 
@@ -54,10 +54,7 @@ namespace Server.Game.TicTacToe
         {
             foreach (var cell in board)
             {
-                if (!cell.IsOccupied)
-                {
-                    yield return cell;
-                }
+                if (!cell.IsOccupied) yield return cell;
             }
         }
 

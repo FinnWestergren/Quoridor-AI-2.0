@@ -28,7 +28,7 @@
             return $"row {Row}, col {Col}: {OccupiedBy}";
         }
         public bool IsOccupied => OccupiedBy != PlayerMarker.None;
-        public int SerializedCell => Col + Row * 3;
+        public int SerializedCell => Col + Row * TicTacToeUtilities.DIMENSION;
 
     }
 }

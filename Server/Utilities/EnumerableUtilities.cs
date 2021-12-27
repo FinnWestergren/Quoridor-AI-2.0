@@ -22,6 +22,7 @@ namespace Server.Utilities
             }
             return output;
         }
+
         public static IEnumerable<T> From2DArray(T[,] array)
         {
             foreach (var v in array)

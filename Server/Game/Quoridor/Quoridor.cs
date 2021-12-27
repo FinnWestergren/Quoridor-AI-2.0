@@ -8,20 +8,19 @@ namespace Server.Game.Quoridor
     public class Quoridor : IGame
     {
         private readonly Stack<QuoridorBoard> _history;
-        private Dictionary<int, Guid> _playerIds;
         public Guid GameId { get; set; }
         public QuoridorBoard CurrentBoard => _history.Peek();
-        public Guid PlayerOne => _playerIds[0];
-        public Guid PlayerTwo => _playerIds[1];
+        public Guid PlayerOne { get; set; }
+        public Guid PlayerTwo { get; set; }
 
-        public Quoridor(bool is4Player = false)
+        public Quoridor(string boardString = null)
         {
-            _history.Push(QuoridorUtilities.Empty2PlayerBoard);
-
-        }
-        public Quoridor(string boardString)
-        {
-            _history.Push(QuoridorUtilities.ParseBoard(boardString));
+            _history = new Stack<QuoridorBoard>();
+            var board = boardString == null ? QuoridorUtilities.Empty2PlayerBoard : QuoridorUtilities.ParseBoard(boardString);
+            _history.Push(board);
+            PlayerOne = Guid.NewGuid();
+            PlayerTwo = Guid.NewGuid();
+            GameId = Guid.NewGuid();
         }
 
         public void CommitAction(int serializedAction, Guid playerId)
