@@ -13,7 +13,7 @@ namespace Server.Game.Quoridor
         private static int _cellCount = (int) Math.Pow(DIMENSION, 2);
         private static int _wallCount = (int) Math.Pow(SUBDIMENSION, 2);
 
-        public static QuoridorBoard Empty2PlayerBoard = ParseBoard(
+        public static string Empty2PlayerBoardString =
             "00000000" +
             "00000000" +
             "00000000" +
@@ -31,10 +31,9 @@ namespace Server.Game.Quoridor
             "000000000" +
             "000000000" +
             "000000000" +
-            "000010000"
-        );
+            "000010000";
 
-        public static QuoridorBoard ParseBoard(string boardString)
+        public static QuoridorBoard ParseBoard(string boardString, Guid p1, Guid p2)
         {
             AssertValidBoardString(boardString);
 
@@ -42,41 +41,56 @@ namespace Server.Game.Quoridor
 
             var output = new QuoridorBoard
             {
-                Cells = ParseCellString(split[1]),
+                Cells = ParseCellString(split[1], p1, p2),
                 Walls = ParseWallString(split[0])
             };
 
-            QuoridorBoardValidator.AssertValidBoard(output);
+            QuoridorValidator.AssertValidBoard(output);
             return output;
         }
 
-        public static QuoridorBoard CommitActionToBoard(int serializedAction, QuoridorBoard board, Guid commitedBy)
+        public static QuoridorBoard TryCommitActionToBoard(int serializedAction, QuoridorBoard board, Guid commitedBy)
         {
             var action = DeserializeAction(serializedAction);
             action.CommittedBy = commitedBy;
-
-            if (IsWallAction(serializedAction))
-            {
-                AssertValidWallAction((QuoridorWallAction) action, board);
-            }
-            else 
-            {
-                AssertValidMoveAction((QuoridorMoveAction) action, board);
-            }
+            QuoridorValidator.AssertValidAction(action, board);
+            var newBoard = CommitAction(action, board);
+            QuoridorValidator.AssertValidBoard(newBoard);
+            return newBoard;
         }
 
-        private static void AssertValidWallAction(QuoridorWallAction action, QuoridorBoard board)
+        private static QuoridorBoard CommitAction(IGameAction action, QuoridorBoard board)
         {
-            
+            var newBoard = CopyBoard(board);
+            if (QuoridorUtilities.IsWallAction(action.SerializedAction))
+            {
+                var wallAction = (QuoridorWallAction) action;
+                newBoard.PlayerWallCounts[action.CommittedBy] = newBoard.PlayerWallCounts[action.CommittedBy] - 1;
+                newBoard.Walls[wallAction.Row, wallAction.Col] = wallAction.Orientation;
+            }
+            else
+            {
+                var moveAction = (QuoridorMoveAction)action;
+                newBoard.SetPlayerPosition(moveAction.CommittedBy, moveAction.Cell);
+            }
+            return newBoard;
         }
 
-        private static void AssertValidMoveAction(QuoridorMoveAction action, QuoridorBoard board)
+        private static QuoridorBoard CopyBoard(QuoridorBoard board)
         {
-            throw new NotImplementedException();
+            var newCells = EnumerableUtilities<QuoridorCell>.From2DArray(board.Cells)
+                .Select(c => new QuoridorCell(c.Row, c.Col));
+            var newWalls = EnumerableUtilities<WallOrientation>.From2DArray(board.Walls);
+            return new QuoridorBoard
+            {
+                Cells = EnumerableUtilities<QuoridorCell>.To2DArray(newCells, DIMENSION),
+                Walls = EnumerableUtilities<WallOrientation>.To2DArray(newWalls, DIMENSION),
+                PlayerWallCounts = new Dictionary<Guid, int>(board.PlayerWallCounts),
+                PlayerPositions = new Dictionary<Guid, QuoridorCell>(board.PlayerPositions)
+            };
         }
 
-
-        private static bool IsWallAction(int serializedAction) => serializedAction % 256 == 0;
+        public static bool IsWallAction(int serializedAction) => serializedAction % 256 == 0;
         private static IGameAction DeserializeAction(int serializedAction)
         {
             if (IsWallAction(serializedAction)) return DeserializeWallAction(serializedAction);
@@ -143,7 +157,7 @@ namespace Server.Game.Quoridor
             return EnumerableUtilities<WallOrientation>.To2DArray(allWalls, SUBDIMENSION);
         }
 
-        private static QuoridorCell[,] ParseCellString(string cellString)
+        private static QuoridorCell[,] ParseCellString(string cellString, Guid p1, Guid p2)
         {
 
             if (cellString.Length != _cellCount)
@@ -153,13 +167,11 @@ namespace Server.Game.Quoridor
 
             var allCells = cellString.Select((c, i) =>
             {
-                int? player = c switch
+                Guid? player = c switch
                 {
                     '0' => null,
-                    '1' => 1,
-                    '2' => 2,
-                    '3' => 3,
-                    '4' => 4,
+                    '1' => p1,
+                    '2' => p2,
                     _ => throw new InvalidBoardException("Cell string contains invalid characters")
                 };
                 var col = i / DIMENSION;

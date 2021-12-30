@@ -12,12 +12,14 @@ namespace Server.Game.Quoridor
         public WallOrientation Orientation { get; set; }
         public int SerializedAction => Col + Row * QuoridorUtilities.SUBDIMENSION << 10 + ((int) Orientation << 8);
         public Guid CommittedBy { get; set; }
+        public bool IsValidated { get; set; } = false;
     }
     public class QuoridorMoveAction : IGameAction
     {
         public QuoridorCell Cell { get; set; }
         public int SerializedAction => Cell.Col + Cell.Row * QuoridorUtilities.DIMENSION;
         public Guid CommittedBy { get; set; }
+        public bool IsValidated { get; set; } = false;
     }
 
 }

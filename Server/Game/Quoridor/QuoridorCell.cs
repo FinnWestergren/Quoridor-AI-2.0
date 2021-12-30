@@ -9,14 +9,18 @@ namespace Server.Game.Quoridor
     {
         public int Row { get; set; }
         public int Col { get; set; }
-        public int? OccupiedBy { get; set; }
+        public Guid? OccupiedBy { get; set; }
         public bool IsOccupied => OccupiedBy != null;
         public int SerializedCell(int dimension) => Col + Row * dimension;
-        public QuoridorCell(int row, int col, int? player = null)
+        public QuoridorCell(int row, int col, Guid? player = null)
         {
             Row = row;
             Col = col;
             OccupiedBy = player;
         }
+
+        public bool Equals(QuoridorCell cell) => this.Col == cell.Col && this.Row == cell.Row;
+
+        public string Print() => $"({Row}, {Col})";
     }
 }

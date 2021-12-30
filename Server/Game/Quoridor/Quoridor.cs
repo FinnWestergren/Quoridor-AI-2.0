@@ -16,10 +16,11 @@ namespace Server.Game.Quoridor
         public Quoridor(string boardString = null)
         {
             _history = new Stack<QuoridorBoard>();
-            var board = boardString == null ? QuoridorUtilities.Empty2PlayerBoard : QuoridorUtilities.ParseBoard(boardString);
-            _history.Push(board);
             PlayerOne = Guid.NewGuid();
             PlayerTwo = Guid.NewGuid();
+            boardString ??= QuoridorUtilities.Empty2PlayerBoardString;
+            var board = QuoridorUtilities.ParseBoard(boardString, PlayerOne, PlayerTwo);
+            _history.Push(board);
             GameId = Guid.NewGuid();
         }
 
