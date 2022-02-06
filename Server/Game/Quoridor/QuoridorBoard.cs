@@ -62,6 +62,41 @@ namespace Server.Game.Quoridor
             return possible;
         }
 
+        public IEnumerable<WallSlot> GetEmptyWallSlots()
+        {
+            foreach (var col in Enumerable.Range(0, QuoridorUtilities.SUBDIMENSION))
+            {
+                foreach (var row in Enumerable.Range(0, QuoridorUtilities.SUBDIMENSION))
+                {
+                    if (Walls[col, row] == WallOrientation.None)
+                    {
+                        var left = col - 1;
+                        var top = row - 1;
+                        var right = col + 1;
+                        var bottom = row + 1;
+
+                        var isBlockedLeft =
+                            col > 0 &&
+                            Walls[left, row] == WallOrientation.Horizontal;
+
+                        var isBlockedRight =
+                            col < QuoridorUtilities.SUBDIMENSION &&
+                            Walls[right, row] == WallOrientation.Horizontal;
+
+                        var isBlockedTop =
+                            row > 0 &&
+                            Walls[col, top] == WallOrientation.Vertical;
+
+                        var isBlockedBottom =
+                            row < QuoridorUtilities.SUBDIMENSION &&
+                            Walls[col, bottom] == WallOrientation.Vertical;
+
+                        if (!isBlockedLeft && !isBlockedRight) yield return new WallSlot { Col = col, Row = row, Orientation = WallOrientation.Horizontal };
+                        if (!isBlockedTop && !isBlockedBottom) yield return new WallSlot { Col = col, Row = row, Orientation = WallOrientation.Vertical };
+                    }
+                }
+            }
+        }
         public void SetPlayerPosition(Guid committedBy, QuoridorCell cell)
         {
             var oldCell = PlayerPositions[committedBy];

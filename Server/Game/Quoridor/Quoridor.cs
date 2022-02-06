@@ -46,7 +46,7 @@ namespace Server.Game.Quoridor
 
         public IEnumerable<IGameAction> GetPossibleMoves(Guid playerId)
         {
-            throw new NotImplementedException();
+            return QuoridorUtilities.GetPossibleMoves(CurrentBoard, playerId);
         }
 
         public int GetBoardValue(Guid playerId)

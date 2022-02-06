@@ -5,11 +5,15 @@ using System.Threading.Tasks;
 
 namespace Server.Game.Quoridor
 {
-    public class QuoridorWallAction : IGameAction
+    public class WallSlot
     {
         public int Col { get; set; }
         public int Row { get; set; }
         public WallOrientation Orientation { get; set; }
+    }
+
+    public class QuoridorWallAction : WallSlot, IGameAction
+    {
         public int SerializedAction => Col + Row * QuoridorUtilities.SUBDIMENSION << 10 + ((int) Orientation << 8);
         public Guid CommittedBy { get; set; }
         public bool IsValidated { get; set; } = false;

@@ -65,10 +65,37 @@ namespace Server.Game.Quoridor
             return newBoard;
         }
 
+        public static IEnumerable<IGameAction> GetPossibleMoves(QuoridorBoard board, Guid playerId)
+        {
+            var moveActions = (List<IGameAction>) board.GetAvailableDestinations(board.PlayerPositions[playerId]).Select(cell => new QuoridorMoveAction
+            {
+                Cell = cell,
+                CommittedBy = playerId
+            });
+
+            if (board.PlayerWallCounts[playerId] <= 0) return moveActions;
+
+            var wallActions = board.GetEmptyWallSlots()
+                .Select(ws => new QuoridorWallAction
+                {
+                    Col = ws.Col,
+                    Row = ws.Row,
+                    Orientation = ws.Orientation,
+                    CommittedBy = playerId
+                })
+                .Where(action =>
+                {
+                    var newBoard = CommitAction(action, board);
+                    return !QuoridorValidator.IsValidBoard(newBoard).value;
+                });
+
+            return moveActions.Union(wallActions);
+        }
+
         private static QuoridorBoard CommitAction(IGameAction action, QuoridorBoard board)
         {
             var newBoard = CopyBoard(board);
-            if (QuoridorUtilities.IsWallAction(action.SerializedAction))
+            if (IsWallAction(action.SerializedAction))
             {
                 var wallAction = (QuoridorWallAction) action;
                 newBoard.PlayerWallCounts[action.CommittedBy] = newBoard.PlayerWallCounts[action.CommittedBy] - 1;

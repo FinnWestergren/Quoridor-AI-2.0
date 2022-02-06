@@ -23,10 +23,10 @@ namespace Server.Game.Quoridor
         private static bool BFS(QuoridorCell start, int yDest, QuoridorBoard board)
         {
             var queue = new Queue<QuoridorCell>();
-            var visited = new SortedList<int, int>();
+            var visited = new List<int>();
             void push (QuoridorCell cell) {
                 queue.Enqueue(cell);
-                visited.Add(cell.SerializedCell(QuoridorUtilities.DIMENSION), start.SerializedCell(QuoridorUtilities.DIMENSION));
+                visited.Add(cell.SerializedCell(QuoridorUtilities.DIMENSION));
             }
 
             push(start);
@@ -34,7 +34,8 @@ namespace Server.Game.Quoridor
             {
                 var current = queue.Dequeue();
                 var avaliableDestinations = board.GetAvailableDestinations(current)
-                    .Where(c => !visited.ContainsKey(c.SerializedCell(QuoridorUtilities.DIMENSION)));
+                    .Where(c => !visited.Contains(c.SerializedCell(QuoridorUtilities.DIMENSION)))
+                    .OrderBy(c => Math.Abs(yDest - c.Row)); // gg ez
                 foreach (var cell in avaliableDestinations) {
                     if (cell.Row == yDest) return true;
                     push(cell);
