@@ -13,35 +13,42 @@ namespace Server.Game.Quoridor
             var p2Clear = IsPathClearForPlayer(board, board.PlayerTwo);
             return (p1Clear && p2Clear, p1Clear && p2Clear ? null : new InvalidBoardException("Path not clear for one or more players"));
         }
+
+        public static int GetDistanceForPlayer(QuoridorBoard board, Guid player)
+        {
+            var yDestination = player == board.PlayerOne ? 0 : QuoridorUtilities.DIMENSION - 1;
+            return BFS(board.PlayerPositions[player], yDestination, board).distance;
+        }
+
         private static bool IsPathClearForPlayer(QuoridorBoard board, Guid player)
         {
             var yDestination = player == board.PlayerOne ? 0 : QuoridorUtilities.DIMENSION - 1;
-            return BFS(board.PlayerPositions[player], yDestination, board);
+            return BFS(board.PlayerPositions[player], yDestination, board).value;
         }
 
         // Naive approach just to get things started. I have a feeling I'll need to optimize this.
-        private static bool BFS(QuoridorCell start, int yDest, QuoridorBoard board)
+        private static (bool value, int distance) BFS(QuoridorCell start, int yDest, QuoridorBoard board)
         {
-            var queue = new Queue<QuoridorCell>();
+            var queue = new Queue<(QuoridorCell cell, int depth)>();
             var visited = new List<int>();
-            void push (QuoridorCell cell) {
-                queue.Enqueue(cell);
+            void push (QuoridorCell cell, int depth) {
+                queue.Enqueue((cell, depth));
                 visited.Add(cell.SerializedCell(QuoridorUtilities.DIMENSION));
             }
 
-            push(start);
+            push(start, 0);
             while (queue.Count > 0)
             {
-                var current = queue.Dequeue();
-                var avaliableDestinations = board.GetAvailableDestinations(current)
+                var (cell, depth) = queue.Dequeue();
+                var avaliableDestinations = board.GetAvailableDestinations(cell)
                     .Where(c => !visited.Contains(c.SerializedCell(QuoridorUtilities.DIMENSION)))
                     .OrderBy(c => Math.Abs(yDest - c.Row)); // gg ez
-                foreach (var cell in avaliableDestinations) {
-                    if (cell.Row == yDest) return true;
-                    push(cell);
+                foreach (var dest in avaliableDestinations) {
+                    if (dest.Row == yDest) return (true, depth);
+                    push(dest, depth + 1);
                 }
             }
-            return false;
+            return (false, int.MaxValue);
         }
     }
 }

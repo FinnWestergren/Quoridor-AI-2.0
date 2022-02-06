@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Server.Game.Quoridor
 {
@@ -26,12 +24,12 @@ namespace Server.Game.Quoridor
 
         public void CommitAction(int serializedAction, Guid playerId)
         {
-            throw new NotImplementedException();
+            _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
         }
 
         public void UndoAction()
         {
-            throw new NotImplementedException();
+            _history.Pop();
         }
 
         public void Print()
@@ -39,10 +37,7 @@ namespace Server.Game.Quoridor
             throw new NotImplementedException();
         }
 
-        public string GameType()
-        {
-            throw new NotImplementedException();
-        }
+        public string GameType() => "Quoridor";
 
         public IEnumerable<IGameAction> GetPossibleMoves(Guid playerId)
         {
@@ -51,12 +46,14 @@ namespace Server.Game.Quoridor
 
         public int GetBoardValue(Guid playerId)
         {
-            throw new NotImplementedException();
+            return PathValidator.GetDistanceForPlayer(CurrentBoard, GetEnemyId(playerId)) - PathValidator.GetDistanceForPlayer(CurrentBoard, playerId);
         }
 
         public Guid GetEnemyId(Guid playerId)
         {
-            throw new NotImplementedException();
+            if (playerId == PlayerOne) return PlayerTwo;
+            if (playerId == PlayerTwo) return PlayerOne;
+            throw new Exception($"Invalid Player Id {playerId}");
         }
     }
 }
