@@ -11,6 +11,8 @@ namespace Server.Game.Quoridor
         public QuoridorCell[,] Cells { get; set; }
         public Dictionary<Guid, int> PlayerWallCounts { get; set; }
         public Dictionary<Guid, QuoridorCell> PlayerPositions { get; set; }
+        public Guid PlayerOne { get; set; }
+        public Guid PlayerTwo { get; set; }
 
         public IEnumerable<QuoridorCell> GetAvailableDestinations(QuoridorCell fromCell, bool includeBunnyHop = true)
         {

@@ -31,12 +31,28 @@ namespace Server.Game.Quoridor
 
         public static (bool value, Exception error) IsValidBoard(QuoridorBoard board)
         {
-            var wallValidation = ValidateWalls(board.Walls);
-            var pathValidation = ValidateClearPath(board);
+            var wallValidation = ValidateWalls(board);
+            var pathValidation = PathValidator.ValidatePath(board);
 
             var outputBool = wallValidation.value && pathValidation.value;
             var outputError = wallValidation.error ?? pathValidation.error;
             return (outputBool, outputError);
+        }
+        private static (bool value, Exception error) ValidateWalls(QuoridorBoard board)
+        {
+            var walls = board.Walls;
+            var list = EnumerableUtilities<WallOrientation>.From2DArray(walls);
+            if (list.Count(w => w != WallOrientation.None) > MAX_WALLS)
+            {
+                return (false, new InvalidBoardException("Maximum wall count exceeded."));
+            }
+
+            if (board.PlayerWallCounts.Values.Any(count => count > MAX_WALLS / 2 || count < 0))
+            {
+                return (false, new InvalidBoardException("Player has invalid wall inventory."));
+            }
+
+            return (true, null);
         }
 
         private static void AssertValidWallAction(QuoridorWallAction action, QuoridorBoard board)
@@ -44,6 +60,7 @@ namespace Server.Game.Quoridor
             var (isValid, error) = ValidateWallAction(action, board);
             if (!isValid) throw error;
         }
+
         private static void AssertValidMoveAction(QuoridorMoveAction action, QuoridorBoard board)
         {
             var (isValid, error) = ValidateMoveAction(action, board);
@@ -78,17 +95,9 @@ namespace Server.Game.Quoridor
             return (true, null);
         }
 
-        private static (bool value, Exception error) ValidateWalls(WallOrientation[,] walls)
-        {
-            var list = EnumerableUtilities<WallOrientation>.From2DArray(walls);
-            if (list.Count(w => w != WallOrientation.None) > MAX_WALLS)
-            {
-                return (false, new InvalidBoardException("Maximum wall count exceeded."));
-            }
-            return (true, null);
-        }
         private static (bool value, Exception error) ValidateClearPath(QuoridorBoard board)
         {
+
             return (true, null);
         }
     }

@@ -12,6 +12,8 @@ namespace Server.Game.Quoridor
         public const int SUBDIMENSION = DIMENSION - 1;
         private static int _cellCount = (int) Math.Pow(DIMENSION, 2);
         private static int _wallCount = (int) Math.Pow(SUBDIMENSION, 2);
+        private static int _wallCountCount = 2;
+        private static int _underscoreCount = 2;
 
         public static string Empty2PlayerBoardString =
             "00000000" +
@@ -31,7 +33,8 @@ namespace Server.Game.Quoridor
             "000000000" +
             "000000000" +
             "000000000" +
-            "000010000";
+            "000010000" + 
+            "_AA";
 
         public static QuoridorBoard ParseBoard(string boardString, Guid p1, Guid p2)
         {
@@ -41,8 +44,11 @@ namespace Server.Game.Quoridor
 
             var output = new QuoridorBoard
             {
+                PlayerWallCounts = ParseWallCounts(split[1], p1, p2),
                 Cells = ParseCellString(split[1], p1, p2),
-                Walls = ParseWallString(split[0])
+                Walls = ParseWallString(split[0]),
+                PlayerOne = p1,
+                PlayerTwo = p2
             };
 
             QuoridorValidator.AssertValidBoard(output);
@@ -86,7 +92,9 @@ namespace Server.Game.Quoridor
                 Cells = EnumerableUtilities<QuoridorCell>.To2DArray(newCells, DIMENSION),
                 Walls = EnumerableUtilities<WallOrientation>.To2DArray(newWalls, DIMENSION),
                 PlayerWallCounts = new Dictionary<Guid, int>(board.PlayerWallCounts),
-                PlayerPositions = new Dictionary<Guid, QuoridorCell>(board.PlayerPositions)
+                PlayerPositions = new Dictionary<Guid, QuoridorCell>(board.PlayerPositions),
+                PlayerOne = board.PlayerOne,
+                PlayerTwo = board.PlayerTwo
             };
         }
 
@@ -126,16 +134,16 @@ namespace Server.Game.Quoridor
 
         private static void AssertValidBoardString(string boardString)
         {
-            var _expectedBoardStringLength = _cellCount + _wallCount + 1;
+            var _expectedBoardStringLength = _cellCount + _wallCount + _wallCountCount + _underscoreCount;
 
             if (boardString.Length != _expectedBoardStringLength)
             {
                 throw new InvalidBoardException($"Expected {_expectedBoardStringLength} chars, recieved {boardString.Length} chars");
             }
 
-            if (!boardString.Contains('_'))
+            if (boardString.Split('_').Length != 3)
             {
-                throw new InvalidBoardException($"Must contain an underscore to separate walls and cells");
+                throw new InvalidBoardException($"Must contain underscores to separate walls, cells, and wall counts");
             }
         }
 
@@ -181,5 +189,12 @@ namespace Server.Game.Quoridor
 
             return EnumerableUtilities<QuoridorCell>.To2DArray(allCells, DIMENSION);
         }
+
+        private static Dictionary<Guid, int> ParseWallCounts(string wallCounts, Guid p1, Guid p2)
+            => new Dictionary<Guid, int>
+            {
+                { p1, Convert.ToInt32("" + wallCounts[0], 16) },
+                { p2, Convert.ToInt32("" + wallCounts[1], 16) }
+            };
     }
 }
