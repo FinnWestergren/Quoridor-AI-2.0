@@ -12,6 +12,6 @@ namespace Server.Game.TicTacToe
             CommittedBy = committedBy;
         }
         public int SerializedAction => Cell.SerializedCell;
-
+        public bool IsValidated { get; set; } = false;
     }
 }
