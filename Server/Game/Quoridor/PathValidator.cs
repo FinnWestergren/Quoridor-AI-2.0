@@ -44,7 +44,7 @@ namespace Server.Game.Quoridor
                     .Where(c => !visited.Contains(c.SerializedCell(QuoridorUtilities.DIMENSION)))
                     .OrderBy(c => Math.Abs(yDest - c.Row)); // gg ez
                 foreach (var dest in avaliableDestinations) {
-                    if (dest.Row == yDest) return (true, depth);
+                    if (dest.Row == yDest) return (true, depth + 1);
                     push(dest, depth + 1);
                 }
             }

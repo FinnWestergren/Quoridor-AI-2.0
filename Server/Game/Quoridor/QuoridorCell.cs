@@ -19,8 +19,11 @@ namespace Server.Game.Quoridor
             OccupiedBy = player;
         }
 
-        public bool Equals(QuoridorCell cell) => this.Col == cell.Col && this.Row == cell.Row;
-
+        public override bool Equals(object obj)
+        {
+            var cell = obj as QuoridorCell;
+            return this.Col == cell.Col && this.Row == cell.Row;
+        }
         public string Print() => $"({Row}, {Col})";
     }
 }

@@ -5,13 +5,13 @@ namespace Server.Utilities
 {
     public static class ActionTimer
     {
-        public static long TimeFunction<T>(Func<T> func, out T value)
+        public static (long time, T result) TimeFunction<T>(Func<T> func)
         {
             var timer = new Stopwatch();
             timer.Start();
-            value = func();
+            var value = func();
             timer.Stop();
-            return timer.ElapsedMilliseconds;
+            return (timer.ElapsedMilliseconds, value);
         }
     }
 }

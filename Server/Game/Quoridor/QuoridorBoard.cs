@@ -10,18 +10,34 @@ namespace Server.Game.Quoridor
         public WallOrientation[,] Walls { get; set; }
         public QuoridorCell[,] Cells { get; set; }
         public Dictionary<Guid, int> PlayerWallCounts { get; set; }
-        public Dictionary<Guid, QuoridorCell> PlayerPositions { get; set; }
+        public Dictionary<Guid, QuoridorCell> PlayerPositions
+        {
+            get
+            {
+                if (_playerPositions == null)
+                {
+                    EvaluatePlayerPositions();
+                }
+                return _playerPositions;
+            }
+            set
+            {
+                _playerPositions = value;
+            }
+        }
+
+        private Dictionary<Guid, QuoridorCell> _playerPositions = null;
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
 
-        public IEnumerable<QuoridorCell> GetAvailableDestinations(QuoridorCell fromCell, bool includeBunnyHop = true)
+        public IEnumerable<QuoridorCell> GetAvailableDestinations(QuoridorCell fromCell, bool concernedAboutOccupied = true)
         {
             var (row, col) = (fromCell.Row, fromCell.Col);
 
-            var left = col - 1;
-            var top = row - 1;
-            var right = col;
-            var bottom = row;
+            var left = Math.Max(col - 1, 0);
+            var top = Math.Max(row - 1, 0);
+            var right = Math.Min(col, QuoridorUtilities.SUBDIMENSION - 1);
+            var bottom = Math.Min(row, QuoridorUtilities.SUBDIMENSION - 1);
 
             var isBlockedLeft =
                 col == 0 ||
@@ -44,17 +60,17 @@ namespace Server.Game.Quoridor
                 Walls[left, bottom] == WallOrientation.Horizontal;
 
             var possible = new List<QuoridorCell>();
-            if (!isBlockedLeft) possible.Add(Cells[row, col - 1]);
-            if (!isBlockedRight) possible.Add(Cells[row, col + 1]);
-            if (!isBlockedTop) possible.Add(Cells[row - 1, col]);
-            if (!isBlockedBottom) possible.Add(Cells[row + 1, col]);
+            if (!isBlockedLeft) possible.Add(Cells[col - 1, row]);
+            if (!isBlockedRight) possible.Add(Cells[col + 1, row]);
+            if (!isBlockedTop) possible.Add(Cells[col, row - 1]);
+            if (!isBlockedBottom) possible.Add(Cells[col, row + 1]);
 
-            var occupiedCell = possible.FirstOrDefault(c => c.IsOccupied);
-            if (occupiedCell != null)
+            if (concernedAboutOccupied)
             {
-                possible.Remove(occupiedCell);
-                if (includeBunnyHop)
+                var occupiedCell = possible.FirstOrDefault(c => c.IsOccupied);
+                if (occupiedCell != null)
                 {
+                    possible.Remove(occupiedCell);
                     possible.AddRange(GetAvailableDestinations(occupiedCell, false));
                 }
             }
@@ -99,10 +115,22 @@ namespace Server.Game.Quoridor
         }
         public void SetPlayerPosition(Guid committedBy, QuoridorCell cell)
         {
-            var oldCell = PlayerPositions[committedBy];
+            var oldCell = _playerPositions[committedBy];
             Cells[oldCell.Row, oldCell.Col].OccupiedBy = null;
-            PlayerPositions[committedBy] = cell;
+            _playerPositions[committedBy] = cell;
             Cells[cell.Row, cell.Col].OccupiedBy = committedBy;
+        }
+
+        private void EvaluatePlayerPositions()
+        {
+            _playerPositions = new Dictionary<Guid, QuoridorCell>();
+            foreach (var cell in Cells)
+            {
+                if (cell.IsOccupied)
+                {
+                    _playerPositions.Add((Guid)cell.OccupiedBy, cell);
+                }
+            }
         }
     }
 }

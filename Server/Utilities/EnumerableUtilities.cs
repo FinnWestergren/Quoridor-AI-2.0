@@ -8,16 +8,15 @@ namespace Server.Utilities
     public static class EnumerableUtilities<T>
     {
 
-        public static T[,] To2DArray(IEnumerable<T> input, int rowLength)
+        public static T[,] ToSquareArray(IEnumerable<T> input, int sideLength)
         {
-            var colLength = input.Count() / rowLength;
-            T[,] output = new T[rowLength, colLength];
+            T[,] output = new T[sideLength, sideLength];
             var i = 0;
-            foreach (var v in input)
+            foreach (T v in input)
             {
-                var col = i / colLength;
-                var row = i % rowLength;
-                output[row, col] = v;
+                var col = i % sideLength;
+                var row = i / sideLength;
+                output[col, row] = v;
                 i++;
             }
             return output;

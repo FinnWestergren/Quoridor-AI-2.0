@@ -56,8 +56,8 @@ namespace Tests.Game
         public void WinAndLoss()
         {
             var TTT = new TicTacToe("XXX------");
-            Assert.IsTrue(TTT.GetBoardValue(TTT.PlayerOne) == 1);
-            Assert.IsTrue(TTT.GetBoardValue(TTT.PlayerTwo) == -1);
+            Assert.IsTrue(TTT.GetBoardValue(TTT.PlayerOne) > 0);
+            Assert.IsTrue(TTT.GetBoardValue(TTT.PlayerTwo) < 0);
             Assert.IsTrue(!TTT.GetPossibleMoves(TTT.PlayerOne).Any());
             Assert.IsTrue(!TTT.GetPossibleMoves(TTT.PlayerTwo).Any());
         }
