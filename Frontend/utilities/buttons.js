@@ -1,10 +1,5 @@
 
-export const removeCustomButtons = (id) => {
-    const filteredButtons = Object.keys(window.customButtons).filter(key => key.startsWith(id));
-    filteredButtons.forEach(fId => {
-        delete window.customButtons[fId];
-    })
-}
+export const removeCustomButton = (id) => delete window.customButtons[id];
 
 export const createCustomButton = ({x, y, w, h, displayText, txtSize, onClick, id, drawBackground, disableFunc}) => {
     const isMousedOver = () => {
@@ -12,11 +7,10 @@ export const createCustomButton = ({x, y, w, h, displayText, txtSize, onClick, i
         const satY = mouseY > y && mouseY < y + h;
         return satX && satY;
     }
-    const isDisabled = () => !!disableFunc && disableFunc();
     window.customButtons = {...window.customButtons, [id]: {
         draw: () => {
             push();
-            drawBackground ? drawBackground() : fill(255);
+            drawBackground && drawBackground();
             translate(x,y);
             rect(0,0,w,h);
             fill(0);
@@ -25,21 +19,17 @@ export const createCustomButton = ({x, y, w, h, displayText, txtSize, onClick, i
                 textAlign(CENTER, CENTER);
                 text(displayText, w * 0.5, h * 0.5);
             }
-            if(isDisabled()){
-                fill(255,255,255,200);
-                rect(0,0,w,h);
-            }
             pop();
         },
-        onClick: () => !isDisabled() && onClick(),
+        onClick,
         isMousedOver,
-        isDisabled
+        isDisabled: () => !!disableFunc && disableFunc()
     }};
 }
 
 window.addEventListener('click', async () => {
     Object.keys(window.customButtons).forEach(k => {
         const customButton = window.customButtons[k];
-        customButton.isMousedOver() && customButton.onClick();
+        customButton.isMousedOver() && !customButton.isDisabled() && customButton.onClick();
     });
 });

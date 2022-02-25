@@ -1,10 +1,14 @@
-import * as ticTacToe from "./tictactoe/index.js";
+import { NewGame } from "../api/TicTacToe.api.js";
+import * as tictactoe from "./tictactoe.js";
+import * as tictactoeOptions from "./tictactoeOptions.js";
+
 
 async function setup() {
     createCanvas(600, 400);
     textFont('Georgia');
     textSize(64);
-    await ticTacToe.setup();
+    await NewGame();
+    tictactoeOptions.setup();
 }
 
 function draw() {
@@ -13,7 +17,8 @@ function draw() {
     noStroke();
     rect(0, 0, width, height);
     pop();
-    ticTacToe.draw();
+    tictactoe.draw();
+    tictactoeOptions.draw();
     Object.keys(window.customButtons).forEach(k => window.customButtons[k].draw());
 }
 window.customButtons = {};

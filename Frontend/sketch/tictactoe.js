@@ -1,9 +1,8 @@
-import { getBoard, getHumanPlayer, getPlayerTwo, getWinner, isGameOver, isGameInProgress } from "../../state/ticTacToe.state.js";
-import { CommitAction, GetMinimaxAction } from "../../api/TicTacToe.api.js";
-
-var disabled = false;
+import { getBoard, getHumanPlayer, getWinner, isGameOver } from "../state/ticTacToe.state.js";
+import { CommitAction, GetMinimaxAction, NewGame } from "../api/TicTacToe.api.js";
 
 const spacing = () => window.gameSize * 0.33;
+
 const drawVerticalLine = (x) => line(x, 0, x, window.gameSize);
 const drawHorizontalLine = (y) => line(0, y, window.gameSize, y);
 
@@ -80,24 +79,13 @@ const drawGameOver = () => {
 
 const overLay = (displayText) => {
     push();
+    disableScreen();
     fill(255, 100, 100);
     textAlign(CENTER, CENTER);
     text(displayText, window.gameSize*0.5, window.gameSize*0.5);
     textSize(20);
     text(`press any key to play again`, window.gameSize*0.5, window.gameSize*0.7);
     pop();
-}
-
-const getAIAction = async () => {
-    disabled = true;
-    await GetMinimaxAction();
-    disabled = false;
-}
-
-export const setup = async () => {
-    if (getHumanPlayer() == getPlayerTwo()) {
-        await getAIAction();
-    }
 }
 
 export const draw = () => {
@@ -107,23 +95,19 @@ export const draw = () => {
     if (board && humanPlayer) {
         drawBoard(board);
     }
-    if (disabled) {
-        disableScreen();
-    }
     if (gameOver) {
-        disableScreen();
         drawGameOver();
     }
 }
 
 window.addEventListener('click', async () => {
     const board = getBoard();
-    if (board && isGameInProgress() && !disabled){
+    if (board && !isGameOver()){
         const mousedTile = mousedOverTile(board);
         if (mousedTile) {
             const success = await CommitAction(mousedTile.serializedCell);
-            if (success && !isGameOver()) {
-                await getAIAction();
+            if (success) {
+                await GetMinimaxAction();
             }
         }
     }
@@ -132,6 +116,6 @@ window.addEventListener('click', async () => {
 
 window.addEventListener('keydown', async () => {
     if(isGameOver()) {
-        window.newGame();
+        await NewGame();
     }
 });

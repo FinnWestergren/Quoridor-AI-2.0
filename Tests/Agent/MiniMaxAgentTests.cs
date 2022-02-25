@@ -12,7 +12,7 @@ namespace Tests.Agent
     public class MiniMaxAgentTests
     {
         private IGame _game;
-        private Guid _playerId = new Guid("c8d9d320-2cb0-4d7b-b851-a6ad7bb8db45");
+        private Guid _playerId = Guid.NewGuid();
         private const int _winningAction = 69; // nice
         private const int _losingAction = 70; // not nice :(
         private IAgent _agent;

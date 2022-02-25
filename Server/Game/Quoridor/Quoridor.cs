@@ -27,15 +27,7 @@ namespace Server.Game.Quoridor
             _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
         }
 
-        public void UndoAction()
-        {
-            _history.Pop();
-        }
-
-        public void Print()
-        {
-            throw new NotImplementedException();
-        }
+        public void UndoAction() => _history.Pop();
 
         public string GameType() => "Quoridor";
 

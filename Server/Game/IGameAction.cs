@@ -9,7 +9,5 @@ namespace Server.Game
     {
         int SerializedAction { get; }
         Guid CommittedBy { get; set; }
-        bool IsValidated { get; set; }
-
     }
 }
