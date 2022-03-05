@@ -18,8 +18,7 @@ export const drawComputerSelectorHeader = () => {
     textAlign(CENTER, CENTER);
     textSize(10);
     text("minimax", 0, 5);
-    text("alphabeta", 0, 20);
-    text("neural net", 0, 35);
+    text("neural net", 0, 20);
     pop();
 }
 
@@ -73,7 +72,7 @@ const createComputerSelectorButtons = () => {
         ...common,
         y: topOffset, 
         onClick: () => {},
-        id: "minimax",
+        id: "alphabeta minimax",
         drawBackground: () => {
            if (getHumanPlayer() == getPlayerOne()) {
                 fill(255, 204, 0);
@@ -83,17 +82,6 @@ const createComputerSelectorButtons = () => {
     createCustomButton({
         ...common,
         y: topOffset + buttonSize * 1.5, 
-        onClick: () => {},
-        id: "alphabeta",
-        drawBackground: () => {
-           if (getHumanPlayer() == getPlayerTwo()) {
-                fill(255, 204, 0);
-           }
-        }
-    });
-    createCustomButton({
-        ...common,
-        y: topOffset + buttonSize * 3, 
         onClick: () => {},
         id: "neuralnet",
         drawBackground: () => {

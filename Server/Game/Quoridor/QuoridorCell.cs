@@ -1,13 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Server.Game.Quoridor
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class QuoridorCell
     {
+        [JsonProperty]
         public int Row { get; set; }
+        [JsonProperty]
         public int Col { get; set; }
         public Guid? OccupiedBy { get; set; }
         public bool IsOccupied => OccupiedBy != null;
@@ -24,6 +28,7 @@ namespace Server.Game.Quoridor
             var cell = obj as QuoridorCell;
             return this.Col == cell.Col && this.Row == cell.Row;
         }
+
         public string Print() => $"({Row}, {Col})";
     }
 }

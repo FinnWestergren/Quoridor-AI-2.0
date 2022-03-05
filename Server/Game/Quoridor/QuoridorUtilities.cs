@@ -65,17 +65,17 @@ namespace Server.Game.Quoridor
             return newBoard;
         }
 
-        public static IEnumerable<IGameAction> GetPossibleMoves(QuoridorBoard board, Guid playerId)
+        public static (IEnumerable<QuoridorMoveAction> moveActions, IEnumerable<QuoridorWallAction> wallActions) GetPossibleMoves(QuoridorBoard board, Guid playerId)
         {
-            var moveActions = (List<IGameAction>) board.GetAvailableDestinations(board.PlayerPositions[playerId]).Select(cell => new QuoridorMoveAction
+            var moveActions = board.GetAvailableDestinations(board.PlayerPositions[playerId]).Select(cell => new QuoridorMoveAction
             {
                 Cell = cell,
                 CommittedBy = playerId
             });
 
-            if (board.PlayerWallCounts[playerId] <= 0) return moveActions;
-
-            var wallActions = board.GetEmptyWallSlots()
+            if (board.PlayerWallCounts[playerId] <= 0) return (moveActions, new List<QuoridorWallAction>());
+            var slots = board.GetEmptyWallSlots().ToList();
+            var wallActions = slots
                 .Select(ws => new QuoridorWallAction
                 {
                     Col = ws.Col,
@@ -86,13 +86,27 @@ namespace Server.Game.Quoridor
                 .Where(action =>
                 {
                     var newBoard = CommitAction(action, board);
-                    return !QuoridorValidator.IsValidBoard(newBoard).value;
+                    return QuoridorValidator.IsValidBoard(newBoard).value;
                 });
 
-            return moveActions.Union(wallActions);
+            return (moveActions, wallActions);
         }
 
-        public static string PrintHumanReadable(QuoridorBoard board)
+        public static bool IsWinCondition(Guid playerId, QuoridorBoard board)
+        {
+            var pos = board.PlayerPositions[playerId];
+            if (board.PlayerOne == playerId)
+            {
+                return pos.Row == 0;
+            }
+            if (board.PlayerTwo == playerId)
+            {
+                return pos.Row == DIMENSION - 1;
+            }
+            throw new Exception("Invalid Player Id");
+        }
+
+        public static string PrintHumanReadableBoard(QuoridorBoard board)
         {
             var output = "";
             foreach (int row in Enumerable.Range(0, DIMENSION))

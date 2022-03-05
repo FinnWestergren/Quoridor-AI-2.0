@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Server.Game.Quoridor
 {
@@ -33,7 +34,8 @@ namespace Server.Game.Quoridor
 
         public IEnumerable<IGameAction> GetPossibleMoves(Guid playerId)
         {
-            return QuoridorUtilities.GetPossibleMoves(CurrentBoard, playerId);
+            var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(CurrentBoard, playerId);
+            return moveActions.Union<IGameAction>(wallActions);
         }
 
         public int GetBoardValue(Guid playerId)

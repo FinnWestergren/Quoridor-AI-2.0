@@ -29,5 +29,23 @@ namespace Server.Utilities
                 yield return v;
             }
         }
+
+
+        public static IEnumerable<IEnumerable<T>> ToSquareEnumerable(T[,] input)
+        {
+            int sideLength = (int) Math.Sqrt(input.Length);
+            IEnumerable<T> getRow(int row)
+            {
+                for (int i = 0; i < sideLength; i++)
+                {
+                    yield return input[i, row];
+                }
+            }
+
+            for (int i = 0; i < sideLength; i++)
+            {
+                yield return getRow(i);
+            }
+        }
     }
 }

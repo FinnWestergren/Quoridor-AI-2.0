@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Server.Game;
-using Server.Game.TicTacToe;
+using Server.Game.Quoridor;
 using Server.InputModels;
 using Server.Players.Agent;
 using Server.Services;
@@ -11,16 +11,15 @@ using System;
 
 namespace Server.Controllers
 {
-    [ApiController]
-    public class TicTacToeController : ControllerBase, IGameController
+    public class QuoridorController : ControllerBase, IGameController
     {
-        private readonly GamePresentationService<TicTacToe> _presentationService;
-        private readonly GameCommandService<TicTacToe> _commandService;
+        private readonly GamePresentationService<Quoridor> _presentationService;
+        private readonly GameCommandService<Quoridor> _commandService;
 
-        public TicTacToeController(IMemoryCache memoryCache)
+        public QuoridorController(IMemoryCache memoryCache)
         {
-            _presentationService = new GamePresentationService<TicTacToe>(memoryCache);
-            _commandService = new GameCommandService<TicTacToe>(memoryCache);
+            _presentationService = new GamePresentationService<Quoridor>(memoryCache);
+            _commandService = new GameCommandService<Quoridor>(memoryCache);
         }
 
         [HttpPost]
@@ -30,7 +29,7 @@ namespace Server.Controllers
         {
             var game = _presentationService.GetGame(action.GameId);
             game.CommitAction(action.SerializedAction, action.PlayerId);
-            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+            return new JsonResult(QuoridorGameViewModel.FromGame(game));
         }
 
         [HttpGet]
@@ -38,7 +37,7 @@ namespace Server.Controllers
         public ActionResult GetGame(Guid gameId)
         {
             var game = _presentationService.GetGame(gameId);
-            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+            return new JsonResult(QuoridorGameViewModel.FromGame(game));
         }
 
         [HttpGet]
@@ -52,7 +51,7 @@ namespace Server.Controllers
                 game.CommitAction(move.SerializedAction, playerId);
                 _commandService.SaveGame(game);
             }
-            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+            return new JsonResult(QuoridorGameViewModel.FromGame(game));
         }
 
         [HttpGet]
@@ -60,8 +59,8 @@ namespace Server.Controllers
         public ActionResult GetPossibleMoves(Guid gameId, Guid? playerId = null)
         {
             var game = _presentationService.GetGame(gameId);
-            var moveSet = game.GetPossibleMoves(playerId ?? game.PlayerOne);
-            return new JsonResult(moveSet);
+            var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(game.CurrentBoard, playerId ?? game.PlayerOne);
+            return new JsonResult(new { moveActions, wallActions });
         }
 
         [HttpGet]
@@ -69,8 +68,7 @@ namespace Server.Controllers
         public ActionResult IsWinCondition(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var playerMarker = playerId == game.PlayerOne ? PlayerMarker.X : PlayerMarker.O;
-            var isWin = TicTacToeUtilities.IsWinCondition(playerMarker, game.CurrentBoard);
+            var isWin = QuoridorUtilities.IsWinCondition(playerId, game.CurrentBoard);
             return new JsonResult(isWin);
         }
 
@@ -78,9 +76,9 @@ namespace Server.Controllers
         [Route("[controller]/NewGame")]
         public ActionResult NewGame(string board = null)
         {
-            var game = new TicTacToe(board);
+            var game = new Quoridor(board);
             _commandService.SaveGame(game);
-            return new JsonResult(TicTacToeGameViewModel.FromGame(game));
+            return new JsonResult(QuoridorGameViewModel.FromGame(game));
         }
 
         [HttpGet]
@@ -88,7 +86,7 @@ namespace Server.Controllers
         public ActionResult PrintBoard(Guid gameId)
         {
             var game = _presentationService.GetGame(gameId);
-            return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(game.CurrentBoard));
+            return new JsonResult(QuoridorUtilities.PrintHumanReadableBoard(game.CurrentBoard));
         }
 
         private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, IGame game, bool ABPrune = true)

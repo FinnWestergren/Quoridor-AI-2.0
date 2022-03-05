@@ -96,7 +96,7 @@ namespace Server.Game.Quoridor
                             Walls[left, row] == WallOrientation.Horizontal;
 
                         var isBlockedRight =
-                            col < QuoridorUtilities.SUBDIMENSION &&
+                            col < QuoridorUtilities.SUBDIMENSION - 1 &&
                             Walls[right, row] == WallOrientation.Horizontal;
 
                         var isBlockedTop =
@@ -104,7 +104,7 @@ namespace Server.Game.Quoridor
                             Walls[col, top] == WallOrientation.Vertical;
 
                         var isBlockedBottom =
-                            row < QuoridorUtilities.SUBDIMENSION &&
+                            row < QuoridorUtilities.SUBDIMENSION - 1 &&
                             Walls[col, bottom] == WallOrientation.Vertical;
 
                         if (!isBlockedLeft && !isBlockedRight) yield return new WallSlot { Col = col, Row = row, Orientation = WallOrientation.Horizontal };
