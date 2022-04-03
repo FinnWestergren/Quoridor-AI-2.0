@@ -11,6 +11,7 @@ namespace Server.Game.Quoridor
         public QuoridorBoard CurrentBoard => _history.Peek();
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
+        private Guid? _whoWentLast = null;
 
         public Quoridor(string boardString = null)
         {
@@ -25,11 +26,23 @@ namespace Server.Game.Quoridor
 
         public void CommitAction(int serializedAction, Guid playerId)
         {
+            if (_whoWentLast == playerId)
+            {
+                throw new Exception("You can't go twice in a row!");
+            }
+            if (IsGameOver())
+            {
+                throw new Exception("Game's already over.");
+            }
             _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
+            _whoWentLast = playerId;
         }
 
-        public void UndoAction() => _history.Pop();
-
+        public void UndoAction()
+        {
+            _history.Pop();
+            if (_whoWentLast != null) _whoWentLast = GetEnemyId((Guid)_whoWentLast);
+        }
         public string GameType() => "Quoridor";
 
         public IEnumerable<IGameAction> GetPossibleMoves(Guid playerId)
@@ -49,5 +62,7 @@ namespace Server.Game.Quoridor
             if (playerId == PlayerTwo) return PlayerOne;
             throw new Exception($"Invalid Player Id {playerId}");
         }
+
+        public bool IsGameOver() => PathValidator.GetDistanceForPlayer(CurrentBoard, PlayerOne) == 0 || PathValidator.GetDistanceForPlayer(CurrentBoard, PlayerTwo) == 0;
     }
 }

@@ -11,6 +11,7 @@ namespace Server.Game.TicTacToe
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
         public Guid GameId { get; set; }
+        private Guid? _whoWentLast = null;
 
         public TicTacToe(string boardString = null)
         {
@@ -33,14 +34,27 @@ namespace Server.Game.TicTacToe
 
         public void CommitAction(int serializedAction, Guid playerId)
         {
+            if(_whoWentLast == playerId)
+            {
+                throw new Exception("You can't go twice in a row!");
+            }
+            if (IsGameOver())
+            {
+                throw new Exception("Game's already over.");
+            }
             var playerMarker = GetPlayerMarker(playerId);
             var next = TicTacToeUtilities.CommitActionToBoard(playerMarker, serializedAction, CurrentBoard);
             _history.Push(next);
+            _whoWentLast = playerId;
         }
 
         public Guid GetEnemyId(Guid playerId) => playerId == PlayerOne ? PlayerTwo : PlayerOne;
 
-        public void UndoAction() => _history.Pop();
+        public void UndoAction()
+        {
+            _history.Pop();
+            if (_whoWentLast != null) _whoWentLast = GetEnemyId((Guid) _whoWentLast);
+        }
 
         public void Print() => TicTacToeUtilities.PrintBoard(CurrentBoard);
 
@@ -76,5 +90,7 @@ namespace Server.Game.TicTacToe
             if (loss) return -1 - openCellsCount; // avoid early loses
             return 0;
         }
+
+        public bool IsGameOver() => TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard);
     }
 }

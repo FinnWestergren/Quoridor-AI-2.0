@@ -14,6 +14,7 @@ namespace Server.Game
         IEnumerable<IGameAction> GetPossibleMoves(Guid playerId); 
         int GetBoardValue(Guid playerId);
         Guid GetEnemyId(Guid playerId);
+        bool IsGameOver();
     }
 
 }

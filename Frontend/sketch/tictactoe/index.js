@@ -1,6 +1,9 @@
 import { getBoard, getHumanPlayer, getWinner, isGameOver } from "../../state/ticTacToe.state.js";
 import { CommitAction, GetMinimaxAction, NewGame } from "../../api/TicTacToe.api.js";
 import * as Options from "./options.js";
+import { getHumanColor } from "../../utilities/colors.js";
+import { isOnDebouceCooldown } from "../../utilities/buttons.js";
+import { useMutex } from "../../api/mutex.js";
 
 const spacing = () => window.gameSize * 0.33;
 
@@ -44,11 +47,11 @@ const mousedOverTile = (board) => board.find(t => mouseWithinBounds(boundaries(t
 
 const disableScreen = () =>
 {
-    push();
+    window.tf.push();
     fill(255,255,255,200);
     noStroke();
     rect(0,0,window.gameSize,window.gameSize);
-    pop();
+    window.tf.pop();
 }
 
 const renderTile = ({row, col, occupiedBy}) => {
@@ -56,20 +59,20 @@ const renderTile = ({row, col, occupiedBy}) => {
     let char = '';
     if (occupiedBy == 0) char = 'X';
     if (occupiedBy == 1) char = 'O';
-    push();
+    window.tf.push();
     fill(0);
     textAlign(CENTER, CENTER);
     text(char, tileBoundaries.centerX, tileBoundaries.centerY)
-    pop();
+    window.tf.pop();
 }
 
 const fillTile = ({row, col, occupiedBy}) => {
     const tileBoundaries = boundaries(row,col);
-    push();
+    window.tf.push();
     noStroke();
-    occupiedBy == 2 ? fill(255, 204, 0) : fill(255, 100, 100);
+    occupiedBy == 2 && fill(getHumanColor());
     rect(tileBoundaries.leftX, tileBoundaries.upperY, spacing(), spacing());
-    pop();
+    window.tf.pop();
 }
 
 const drawGameOver = () => {
@@ -79,24 +82,23 @@ const drawGameOver = () => {
 }
 
 const overLay = (displayText) => {
-    push();
+    window.tf.push();
     disableScreen();
     fill(255, 100, 100);
     textAlign(CENTER, CENTER);
     text(displayText, window.gameSize*0.5, window.gameSize*0.5);
     textSize(20);
     text(`press any key to play again`, window.gameSize*0.5, window.gameSize*0.7);
-    pop();
+    window.tf.pop();
 }
-
-export const setup = Options.setup
 
 export const draw = () => {
     const board = getBoard();
     const gameOver = isGameOver();
     const humanPlayer = getHumanPlayer();
-    Options.draw()
-    if (board && humanPlayer) {
+    const gameStarted = board && humanPlayer;
+    Options.draw(gameStarted);
+    if (gameStarted) {
         drawBoard(board);
     }
     if (gameOver) {
@@ -105,14 +107,16 @@ export const draw = () => {
 }
 
 window.addEventListener('click', async () => {
+    if (isOnDebouceCooldown()) return;
     const board = getBoard();
-    if (board && !isGameOver()){
+    const playable = board && getHumanPlayer() && !isGameOver()
+    if (playable){
         const mousedTile = mousedOverTile(board);
         if (mousedTile) {
-            const success = await CommitAction(mousedTile.serializedCell);
-            if (success) {
-                await GetMinimaxAction();
-            }
+            useMutex(async () => {
+                const success = await CommitAction(mousedTile.serializedCell);
+                if (success) await GetMinimaxAction();
+            }, "human_action")
         }
     }
 });
