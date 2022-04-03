@@ -19,6 +19,8 @@ export async function CommitAction(tileNumber) {
         serializedAction: tileNumber
     }
 
+    console.log("commiting...", data)
+
     const resp = await instance.post('CommitAction',  data);
     updateState(resp.data);
     return true;

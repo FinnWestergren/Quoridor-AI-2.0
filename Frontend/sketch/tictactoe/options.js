@@ -1,5 +1,5 @@
-import { getHumanPlayer, getPlayerOne, getPlayerTwo, selectPlayer } from "../state/ticTacToe.state.js";
-import { createCustomButton } from "../utilities/buttons.js";
+import { getHumanPlayer, getPlayerOne, getPlayerTwo, selectPlayer } from "../../state/ticTacToe.state.js";
+import { createCustomButton } from "../../utilities/buttons.js";
 
 const panelSize = () => width - window.gameSize;
 

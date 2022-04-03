@@ -1,5 +1,6 @@
-import { getBoard, getHumanPlayer, getWinner, isGameOver } from "../state/ticTacToe.state.js";
-import { CommitAction, GetMinimaxAction, NewGame } from "../api/TicTacToe.api.js";
+import { getBoard, getHumanPlayer, getWinner, isGameOver } from "../../state/ticTacToe.state.js";
+import { CommitAction, GetMinimaxAction, NewGame } from "../../api/TicTacToe.api.js";
+import * as Options from "./options.js";
 
 const spacing = () => window.gameSize * 0.33;
 
@@ -88,10 +89,13 @@ const overLay = (displayText) => {
     pop();
 }
 
+export const setup = Options.setup
+
 export const draw = () => {
     const board = getBoard();
     const gameOver = isGameOver();
     const humanPlayer = getHumanPlayer();
+    Options.draw()
     if (board && humanPlayer) {
         drawBoard(board);
     }
