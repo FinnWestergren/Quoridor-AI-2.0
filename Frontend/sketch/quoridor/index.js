@@ -57,7 +57,8 @@ const drawBoardCanvas = () => {
 const drawWalls = (walls) => {
     for (let i = 0; i < walls.length; i++){
         for (let j = 0; j < walls.length; j++){
-            walls[j][i] && drawWall(i,j, walls[j][i]);
+            const wall = walls[j][i]
+            wall && drawWall(i,j, wall);
         }
     }
 }
