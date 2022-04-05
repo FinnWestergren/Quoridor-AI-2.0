@@ -6,6 +6,10 @@ function getState() {
 }
 
 export function updateState(newState) {
+    const pwc = newState.playerWallCounts
+    const pp = newState.playerPositions
+    if (pwc) newState.playerWallCounts = JSON.parse(pwc)
+    if (pp) newState.playerPositions = JSON.parse(pp)
     window[gameStateKey] = newState;
 }
 
@@ -25,7 +29,9 @@ export function clearSelectedPlayer() {
 export const getHumanPlayer = () => window[selectedPlayerKey];
 export const getComputerPlayer = () => getHumanPlayer() == getPlayerOne() ? getPlayerTwo() : getPlayerOne();
 
-export const getBoard = () => getState()?.currentBoard; 
+export const getWalls = () => getState()?.walls; 
+export const getWallCounts = () => getState()?.playerWallCounts; 
+export const getPositions = () => getState()?.playerPositions; 
 export const getGameId = () => getState()?.gameId;
 export const getPlayerOne = () => getState()?.playerOne; 
 export const getPlayerTwo = () => getState()?.playerTwo;

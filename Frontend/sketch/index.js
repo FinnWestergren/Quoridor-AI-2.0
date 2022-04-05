@@ -1,16 +1,16 @@
-import { NewGame } from "../api/TicTacToe.api.js";
 import * as tictactoe from "./tictactoe/index.js";
+import * as quoridor from "./quoridor/index.js";
 import { Transformer } from "../utilities/transformer.js"
 
 window.gameSize = 600;
-window.game = tictactoe;
+window.game = quoridor;
 window.tf = new Transformer()
 
 window.setup = async () => {
     createCanvas(window.gameSize + 200, window.gameSize);
     textFont('Georgia');
     textSize(64);
-    await NewGame();
+    await window.game.NewGame()
 };
 
 window.draw = () => {

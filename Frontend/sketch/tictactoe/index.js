@@ -91,6 +91,7 @@ const overLay = (displayText) => {
     text(`press any key to play again`, window.gameSize*0.5, window.gameSize*0.7);
     window.tf.pop();
 }
+export const newGame = NewGame
 
 export const draw = () => {
     const board = getBoard();
