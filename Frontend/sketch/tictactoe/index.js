@@ -1,7 +1,8 @@
+export { NewGame } from "../../api/ticTacToe.api.js";
 import { getBoard, getHumanPlayer, getWinner, isGameOver } from "../../state/ticTacToe.state.js";
 import { CommitAction, GetMinimaxAction, NewGame } from "../../api/TicTacToe.api.js";
 import * as Options from "./options.js";
-import { getHumanColor } from "../../utilities/colors.js";
+import { getHumanColor, getWinnerColor } from "../../utilities/colors.js";
 import { isOnDebouceCooldown } from "../../utilities/buttons.js";
 import { useMutex } from "../../api/mutex.js";
 
@@ -84,14 +85,13 @@ const drawGameOver = () => {
 const overLay = (displayText) => {
     window.tf.push();
     disableScreen();
-    fill(255, 100, 100);
+    fill(getWinnerColor());
     textAlign(CENTER, CENTER);
     text(displayText, window.gameSize*0.5, window.gameSize*0.5);
     textSize(20);
     text(`press any key to play again`, window.gameSize*0.5, window.gameSize*0.7);
     window.tf.pop();
 }
-export const newGame = NewGame
 
 export const draw = () => {
     const board = getBoard();

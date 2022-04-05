@@ -13,6 +13,7 @@ namespace Server.ViewModels
         public string PlayerPositions { get; set; }
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
+        public Guid WhosTurn { get; set; }
         public Guid GameId { get; set; }
         public Guid? Winner { get; set; }
 
@@ -32,7 +33,9 @@ namespace Server.ViewModels
                 PlayerOne = game.PlayerOne,
                 PlayerTwo = game.PlayerTwo,
                 GameId = game.GameId,
-                Winner = winner
+                Winner = winner,
+                WhosTurn = game.WhosTurn,
+
             };
         }
     }

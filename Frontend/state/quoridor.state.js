@@ -1,6 +1,12 @@
 const gameStateKey = "uncletony_420_69"
 const selectedPlayerKey = "selectedPlayerKey"
 
+export const GameStates = {
+    PLAYER_SELECT: "PLAYER_SELECT",
+    IN_PROGRESS: "IN_PROGRESS",
+    GAME_OVER: "GAME_OVER"
+}
+
 function getState() {
     return window[gameStateKey];
 }
@@ -35,6 +41,12 @@ export const getPositions = () => getState()?.playerPositions;
 export const getGameId = () => getState()?.gameId;
 export const getPlayerOne = () => getState()?.playerOne; 
 export const getPlayerTwo = () => getState()?.playerTwo;
+export const getCurrentPlayer = () => getState()?.whosTurn;
+export const getGameState = () => {
+    if (!getState() || !getHumanPlayer()) return GameStates.PLAYER_SELECT
+    if (getWinner()) return GameStates.GAME_OVER
+    return GameStates.IN_PROGRESS
+}
 export const getWinner = () => { 
     var state = getState();
     var winner = state?.winner;
@@ -42,7 +54,5 @@ export const getWinner = () => {
     var playerOne = state?.playerOne;
     return winner === playerOne ? 'Player One' : 'Player Two';
 }
+export const getWinnerId = () => getState()?.winner;
 
-export const isBoardEmpty = () => getBoard() && !getBoard().some(t => t.isOccupied);
-const isBoardfull = () => getBoard() && !getBoard().some(t => !t.isOccupied);
-export const isGameOver = () => getWinner() || isBoardfull();

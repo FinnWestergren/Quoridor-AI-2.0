@@ -11,13 +11,14 @@ namespace Server.Game.Quoridor
         public QuoridorBoard CurrentBoard => _history.Peek();
         public Guid PlayerOne { get; set; }
         public Guid PlayerTwo { get; set; }
-        private Guid? _whoWentLast = null;
+        public Guid WhosTurn { get; set; }
 
-        public Quoridor(string boardString = null)
+        public Quoridor(string boardString = null, Guid? whosTurn = null)
         {
             _history = new Stack<QuoridorBoard>();
             PlayerOne = Guid.NewGuid();
             PlayerTwo = Guid.NewGuid();
+            WhosTurn = whosTurn ?? PlayerOne;
             boardString ??= QuoridorUtilities.Empty2PlayerBoardString;
             var board = QuoridorUtilities.ParseBoard(boardString, PlayerOne, PlayerTwo);
             _history.Push(board);
@@ -26,22 +27,22 @@ namespace Server.Game.Quoridor
 
         public void CommitAction(int serializedAction, Guid playerId)
         {
-            if (_whoWentLast == playerId)
+            if (WhosTurn != playerId)
             {
-                throw new Exception("You can't go twice in a row!");
+                throw new Exception("Not Your Turn!");
             }
             if (IsGameOver())
             {
                 throw new Exception("Game's already over.");
             }
             _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
-            _whoWentLast = playerId;
+            WhosTurn = GetEnemyId(playerId);
         }
 
         public void UndoAction()
         {
             _history.Pop();
-            if (_whoWentLast != null) _whoWentLast = GetEnemyId((Guid)_whoWentLast);
+            WhosTurn = GetEnemyId(WhosTurn);
         }
         public string GameType() => "Quoridor";
 
