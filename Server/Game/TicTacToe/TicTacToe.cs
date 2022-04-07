@@ -91,6 +91,8 @@ namespace Server.Game.TicTacToe
             return 0;
         }
 
-        public bool IsGameOver() => TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard);
+        public bool IsFull() => !TicTacToeUtilities.GetOpenCells(CurrentBoard).Any();
+        public bool IsTie() => !TicTacToeUtilities.GetOpenCells(CurrentBoard).Any() && !(TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard));
+        public bool IsGameOver() => IsFull() || TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard);
     }
 }

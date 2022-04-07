@@ -16,6 +16,7 @@ namespace Server.ViewModels
         public Guid WhosTurn { get; set; }
         public Guid GameId { get; set; }
         public Guid? Winner { get; set; }
+        public bool IsTie = false;
 
         public static QuoridorGameViewModel FromGame(Quoridor game)
         {

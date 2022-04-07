@@ -1,6 +1,6 @@
-import {p1Color, p2Color} from "../../utilities/colors.js"
-import { getHumanPlayer, getPlayerOne, getPlayerTwo, selectPlayer } from "../../state/quoridor.state.js";
-import { drawButton, isButtonMousedOver } from "../../utilities/buttons.js";
+import { p1Color, p2Color } from "../utilities/colors.js"
+import { getHumanPlayer, getPlayerOne, getPlayerTwo, selectPlayer } from "../state/sharedState.js";
+import { drawButton, isButtonMousedOver } from "../utilities/buttons.js";
 
 const p1Button = {
     boundaries: { x: -40, y: 0, w: 50, h: 50 },
@@ -18,7 +18,6 @@ const p2Button = {
     }
 }
 
-
 const drawSingleButton = (button, color, selected) => {
     push();
     if (isButtonMousedOver(button.id) || selected) fill(color);
@@ -26,11 +25,9 @@ const drawSingleButton = (button, color, selected) => {
     pop();
 }
 
-
-
 export const draw = () => {
     textAlign(CENTER, TOP);
-    text("Choose Your Player", window.gameSize/2 , 50)
+    text("Take Yer Pick", window.gameSize/2 , 50)
     window.tf.push()
     window.tf.translate(window.gameSize/2, window.gameSize/4)
     drawSingleButton(p1Button, p1Color, getHumanPlayer() == getPlayerOne());

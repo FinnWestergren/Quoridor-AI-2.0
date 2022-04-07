@@ -1,11 +1,4 @@
-const gameStateKey = "uncletony_420_69"
-const selectedPlayerKey = "selectedPlayerKey"
-
-export const GameStates = {
-    PLAYER_SELECT: "PLAYER_SELECT",
-    IN_PROGRESS: "IN_PROGRESS",
-    GAME_OVER: "GAME_OVER"
-}
+import { gameStateKey, selectedPlayerKey } from "../../shared/state/sharedState.js";
 
 function getState() {
     return window[gameStateKey];

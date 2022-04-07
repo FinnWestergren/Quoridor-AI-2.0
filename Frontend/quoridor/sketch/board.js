@@ -1,5 +1,5 @@
-import { getWalls, getPositions, getCurrentPlayer, getHumanPlayer } from "../../state/quoridor.state.js";
-import { wallColor, tileColor, getPlayerColor, ghostTileColor } from "../../utilities/colors.js"
+import { getWalls, getPositions, getCurrentPlayer, getHumanPlayer } from "../state/quoridorState.js";
+import { wallColor, tileColor, getPlayerColor, ghostTileColor } from "../../shared/utilities/colors.js"
 
 export const draw = () => {
     drawBoardCanvas()

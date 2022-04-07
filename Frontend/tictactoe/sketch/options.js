@@ -1,7 +1,7 @@
-import { getHumanPlayer, getPlayerOne, getPlayerTwo, selectPlayer } from "../../state/ticTacToe.state.js";
-import { drawButton, isButtonMousedOver } from "../../utilities/buttons.js";
-import {p1Color, p2Color} from "../../utilities/colors.js"
-import { GetMinimaxAction } from "../../api/TicTacToe.api.js";
+import { getHumanPlayer, getPlayerOne, getPlayerTwo, selectPlayer } from "../../shared/state/sharedState.js";
+import { drawButton, isButtonMousedOver } from "../../shared/utilities/buttons.js";
+import {p1Color, p2Color} from "../../shared/utilities/colors.js"
+import { GetMinimaxAction } from "../../shared/api/sharedApi.js";
 
 const panelSize = () => width - window.gameSize;
 

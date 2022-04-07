@@ -1,21 +1,23 @@
-import { updateState, getGameId, getComputerPlayer, getHumanPlayer, clearSelectedPlayer } from "../state/quoridor.state.js";
-import { useMutex } from "./mutex.js" 
+import { updateState, getGameId, getComputerPlayer, getHumanPlayer, clearSelectedPlayer, clearState } from "../state/sharedState.js";
+import { useMutex } from "../utilities/mutex.js" 
 
-const apiId = "api"
-const instance = axios.create({
-    baseURL: 'https://localhost/UncleTony/Quoridor',
+const API_MUTEX_ID = "API_MUTEX_ID"
+
+const axiosInstance = () => axios.create({
+    baseURL: `https://localhost/UncleTony/${window.controller}`,
     'Content-Type': 'application/json'
   });
 
 export async function NewGame() {
     console.log("new game...")
+    clearSelectedPlayer();
+    clearState();
     return await useMutex(async () => {
-        clearSelectedPlayer();
-        const newGame = await instance.get('NewGame');
+        const newGame = await axiosInstance().get('NewGame');
         updateState(newGame.data);
         console.log("new game ready!")
         return true;
-    }, apiId)
+    }, API_MUTEX_ID)
 }
 
 export async function CommitAction(tileNumber) {
@@ -27,11 +29,11 @@ export async function CommitAction(tileNumber) {
             serializedAction: tileNumber
         }
 
-        const resp = await instance.post('CommitAction',  data);
+        const resp = await axiosInstance().post('CommitAction',  data);
         updateState(resp.data);
         console.log("action commited!")
         return true;
-    }, apiId)
+    }, API_MUTEX_ID)
 }
 
 export async function GetMinimaxAction() {
@@ -41,10 +43,10 @@ export async function GetMinimaxAction() {
             gameId: getGameId(),
             playerId: getComputerPlayer()
         };
-        const resp = await instance.get('GetMinimaxMove',  { params });
+        const resp = await axiosInstance().get('GetMinimaxMove',  { params });
         updateState(resp.data);
         console.log("action recieved!")
 
         return true;
-    }, apiId)
+    }, API_MUTEX_ID)
 }

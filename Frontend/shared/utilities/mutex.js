@@ -2,15 +2,15 @@
 const locks = {}
 
 export const useMutex = async (callback, id) => {
-    while (locks[id]) {
-        await new Promise(r => setTimeout(r, 100));
+    if (locks[id]) {
+        return
     }
     try {
         locks[id] = true;
         return await callback()
     }
     catch {
-        return false
+        return
     }
     finally {
         locks[id] = false

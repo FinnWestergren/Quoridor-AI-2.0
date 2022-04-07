@@ -1,5 +1,11 @@
-const gameStateKey = "uncletony_420_69"
-const selectedPlayerKey = "selectedPlayerKey"
+export const gameStateKey = "state_key"
+export const selectedPlayerKey = "selected_player"
+
+export const GameStates = {
+    PLAYER_SELECT: "PLAYER_SELECT",
+    IN_PROGRESS: "IN_PROGRESS",
+    GAME_OVER: "GAME_OVER"
+}
 
 function getState() {
     return window[gameStateKey];
@@ -10,6 +16,7 @@ export function updateState(newState) {
 }
 
 export function selectPlayer(playerNumber) {
+    console.log("selecting player", playerNumber)
     if (playerNumber == 1) {
         window[selectedPlayerKey] = getPlayerOne();
     }
@@ -22,21 +29,24 @@ export function clearSelectedPlayer() {
     window[selectedPlayerKey] = null
 }
 
+export function clearState() {
+    window[gameStateKey] = null
+}
+
 export const getHumanPlayer = () => window[selectedPlayerKey];
 export const getComputerPlayer = () => getHumanPlayer() == getPlayerOne() ? getPlayerTwo() : getPlayerOne();
 
-export const getBoard = () => getState()?.currentBoard; 
+export const getWalls = () => getState()?.walls; 
 export const getGameId = () => getState()?.gameId;
 export const getPlayerOne = () => getState()?.playerOne; 
 export const getPlayerTwo = () => getState()?.playerTwo;
-export const getWinner = () => { 
-    var state = getState();
-    var winner = state?.winner;
-    if(!winner) return null;
-    var playerOne = state?.playerOne;
-    return winner === playerOne ? 'Player One' : 'Player Two';
+export const getCurrentPlayer = () => getState()?.whosTurn;
+export const getWinnerId = () => getState()?.winner;
+export const getIsTie = () => getState()?.isTie;
+
+export const getGameState = () => {
+    if (!getState() || !getHumanPlayer()) return GameStates.PLAYER_SELECT
+    if (getWinnerId() || getIsTie()) return GameStates.GAME_OVER
+    return GameStates.IN_PROGRESS
 }
 
-export const isBoardEmpty = () => getBoard() && !getBoard().some(t => t.isOccupied);
-const isBoardfull = () => getBoard() && !getBoard().some(t => !t.isOccupied);
-export const isGameOver = () => getWinner() || isBoardfull();

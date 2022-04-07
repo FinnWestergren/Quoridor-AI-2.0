@@ -12,6 +12,7 @@ namespace Server.ViewModels
         public Guid PlayerTwo { get; set; }
         public Guid GameId { get; set; }
         public Guid? Winner { get; set; }
+        public bool IsTie { get; set; } = false;
 
         public static TicTacToeGameViewModel FromGame(TicTacToe game)
         {
@@ -28,7 +29,8 @@ namespace Server.ViewModels
                 PlayerOne = game.PlayerOne,
                 PlayerTwo = game.PlayerTwo,
                 GameId = game.GameId,
-                Winner = winner
+                Winner = winner,
+                IsTie = game.IsTie()
             };
         }
     }

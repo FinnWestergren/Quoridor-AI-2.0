@@ -1,4 +1,4 @@
-import { getComputerPlayer, getWinnerId, getHumanPlayer, getPlayerOne, getPlayerTwo } from "../state/quoridor.state.js"
+import { getComputerPlayer, getWinnerId, getHumanPlayer, getPlayerOne, getPlayerTwo } from "../state/sharedState.js"
 
 export const p1Color = "#e07a5f"
 export const p2Color = "#3d405b"
