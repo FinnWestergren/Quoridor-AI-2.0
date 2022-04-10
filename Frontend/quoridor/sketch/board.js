@@ -1,4 +1,5 @@
-import { getWalls, getPositions, getCurrentPlayer, getHumanPlayer } from "../state/quoridorState.js";
+import { getWalls, getPositions } from "../state/quoridorState.js";
+import { getCurrentPlayer, getHumanPlayer } from "../../shared/state/sharedState.js";
 import { wallColor, tileColor, getPlayerColor, ghostTileColor } from "../../shared/utilities/colors.js"
 
 export const draw = () => {
@@ -9,7 +10,7 @@ export const draw = () => {
 
 const DIMENSION = 9
 const SPACING_FACTOR = 1/DIMENSION;
-const SUBSPACING_FACTOR = 0.05;
+const SUBSPACING_FACTOR = 0.07;
 
 const spacing = () => window.gameSize * SPACING_FACTOR;
 const subSpacing = () => spacing() * SUBSPACING_FACTOR;
@@ -22,8 +23,34 @@ const mouseWithinTile = (i, j) => {
     return xSat && ySat;
 }
 
+const mouseWithinBoard = () => {
+    const xSat = mouseX > 0 && mouseX < window.gameSize;
+    const ySat = mouseY > 0 && mouseY < window.gameSize;
+    return xSat && ySat;
+}
+
+const mouseWithinWallSlot = (i, j, r) => {
+    let xLower, yLower, xUpper, yUpper;
+    if (r == 1) { // vertical
+        xLower = (i + 1) * spacing() - (0.5 * subSpacing())
+        yLower = (j + 0.5) * spacing()
+        xUpper = xLower + subSpacing()
+        yUpper = yLower + spacing()
+    }
+    else { // horizontal
+        xLower = (i + 0.5) * spacing()
+        yLower = (j + 1) * spacing() - (0.5 * subSpacing())
+        xUpper = xLower + spacing()
+        yUpper = yLower + subSpacing()
+    }
+    const xSat = mouseX > xLower && mouseX < xUpper;
+    const ySat = mouseY > yLower && mouseY < yUpper;
+    return xSat && ySat;
+}
+
 const getTileColor = (i, j) => {
     if (getCurrentPlayer() != getHumanPlayer()) return tileColor
+    if (!mouseWithinBoard()) return tileColor
     if (mouseWithinTile(i, j)) return tileColor
     return ghostTileColor
 }
@@ -64,10 +91,20 @@ const drawBoardCanvas = () => {
 }
 
 const drawWalls = (walls) => {
+    let moused = false;
     for (let i = 0; i < walls.length; i++){
         for (let j = 0; j < walls.length; j++){
             const wall = walls[j][i]
             wall && drawWall(i,j, wall);
+            if (!moused && mouseWithinWallSlot(i, j, 1)) {
+                drawWall(i, j, 1)
+                moused = true;
+            }
+            if (!moused && mouseWithinWallSlot(i, j, 2)) {
+                drawWall(i, j, 2)
+                moused = true;
+                continue
+            }
         }
     }
 }

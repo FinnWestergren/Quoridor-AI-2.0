@@ -12,6 +12,10 @@ function getState() {
 }
 
 export function updateState(newState) {
+    const pwc = newState.playerWallCounts
+    const pp = newState.playerPositions
+    if (pwc) newState.playerWallCounts = JSON.parse(pwc)
+    if (pp) newState.playerPositions = JSON.parse(pp)
     window[gameStateKey] = newState;
 }
 

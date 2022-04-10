@@ -3,7 +3,7 @@ import * as quoridor from "./quoridor/index.js";
 import { Transformer } from "./shared/utilities/transformer.js"
 
 window.gameSize = 600;
-window.game = tictactoe;
+window.game = quoridor;
 window.tf = new Transformer()
 
 window.setup = async () => {
