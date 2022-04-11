@@ -10,6 +10,26 @@ export const setup = async () => {
     window.controller = "tictactoe"
     await NewGame()
     setupBoard()
+
+
+    window.addEventListener('keydown', async () => {
+        if (getGameState() == GameStates.GAME_OVER) {
+            await setup();
+        }
+    });
+    
+    
+    window.addEventListener('human_action', async (e) => {
+        if (getGameState() !== GameStates.IN_PROGRESS) return;
+        if (isOnDebouceCooldown()) return;
+        useMutex(async () => {
+            window.drawWaitOverlay = true;
+            const success = await e.detail.action();
+            if (success) await GetMinimaxAction();
+            window.drawWaitOverlay = false;
+        }, 'human_action')
+    });
+    
 }
 
 window.drawWaitOverlay = false;
@@ -29,26 +49,6 @@ export const draw = () => {
             return;
     }
 }
-
-
-window.addEventListener('keydown', async () => {
-    if (getGameState() == GameStates.GAME_OVER) {
-        await NewGame();
-    }
-});
-
-
-window.addEventListener('human_action', async (e) => {
-    if (getGameState() !== GameStates.IN_PROGRESS) return;
-    if (isOnDebouceCooldown()) return;
-    useMutex(async () => {
-        window.drawWaitOverlay = true;
-        const success = await e.detail.action();
-        if (success) await GetMinimaxAction();
-        window.drawWaitOverlay = false;
-    }, 'human_action')
-});
-
 
 const drawLoadingOverlay = () => {
     window.tf.push();

@@ -3,6 +3,7 @@ using System;
 
 namespace Server.Game.Quoridor
 {
+
     [JsonObject(MemberSerialization.OptIn)]
     public class WallSlot
     {
@@ -17,8 +18,10 @@ namespace Server.Game.Quoridor
     [JsonObject(MemberSerialization.OptIn)]
     public class QuoridorWallAction : WallSlot, IGameAction
     {
+        public const int WALL_SERIALIZATION_FACTOR = 2048;
+
         [JsonProperty]
-        public int SerializedAction => Col + Row * QuoridorUtilities.SUBDIMENSION << 10 + ((int) Orientation << 8);
+        public int SerializedAction => Row + Col * QuoridorUtilities.DIMENSION + (int) Orientation * WALL_SERIALIZATION_FACTOR;
         public Guid CommittedBy { get; set; }
 
     }
@@ -28,7 +31,7 @@ namespace Server.Game.Quoridor
         [JsonProperty]
         public QuoridorCell Cell { get; set; }
         [JsonProperty]
-        public int SerializedAction => Cell.Col + Cell.Row * QuoridorUtilities.DIMENSION;
+        public int SerializedAction => Cell.Row + Cell.Col * QuoridorUtilities.DIMENSION;
         public Guid CommittedBy { get; set; }
     }
 

@@ -11,6 +11,8 @@ using System;
 
 namespace Server.Controllers
 {
+    [ApiController]
+
     public class QuoridorController : ControllerBase, IGameController
     {
         private readonly GamePresentationService<Quoridor> _presentationService;

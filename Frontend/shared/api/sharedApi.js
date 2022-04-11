@@ -18,15 +18,15 @@ export async function NewGame() {
     return true;
 }
 
-export async function CommitAction(tileNumber) {
+export async function CommitAction(serializedAction) {
     console.log("commiting action...")
     return await useMutex(async () => {
         const data = {
             gameId: getGameId(),
             playerId: getHumanPlayer(),
-            serializedAction: tileNumber
+            serializedAction
         }
-
+        console.log("data: ", data)
         const resp = await axiosInstance().post('CommitAction', data);
         updateState(resp.data);
         console.log("action commited!")

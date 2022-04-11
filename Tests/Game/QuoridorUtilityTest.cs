@@ -74,5 +74,32 @@ namespace Tests.Game
             var print = QuoridorUtilities.PrintHumanReadableBoard(board);
             Assert.AreEqual(10, distP2);
         }
+
+        [TestMethod]
+        public void MoveActionSerialization()
+        {
+            var action = new QuoridorMoveAction
+            {
+                Cell = new QuoridorCell(3, 5)
+            };
+
+            var deserialized = QuoridorUtilities.DeserializeMoveAction(action.SerializedAction);
+            Assert.AreEqual(action.SerializedAction, deserialized.SerializedAction);
+        }
+
+        [TestMethod]
+        public void WallActionSerialization()
+        {
+            var action = new QuoridorWallAction
+            {
+                Row = 5,
+                Col = 3,
+                Orientation = WallOrientation.Horizontal
+
+            };
+
+            var deserialized = QuoridorUtilities.DeserializeWallAction(action.SerializedAction);
+            Assert.AreEqual(action.SerializedAction, deserialized.SerializedAction);
+        }
     }
 }

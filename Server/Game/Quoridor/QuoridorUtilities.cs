@@ -149,7 +149,7 @@ namespace Server.Game.Quoridor
             }
             else
             {
-                var moveAction = (QuoridorMoveAction)action;
+                var moveAction = (QuoridorMoveAction) action;
                 newBoard.SetPlayerPosition(moveAction.CommittedBy, moveAction.Cell);
             }
             return newBoard;
@@ -171,24 +171,23 @@ namespace Server.Game.Quoridor
             };
         }
 
-        public static bool IsWallAction(int serializedAction) => serializedAction % 256 == 0;
+        public static bool IsWallAction(int serializedAction) => serializedAction >= QuoridorWallAction.WALL_SERIALIZATION_FACTOR;
         private static IGameAction DeserializeAction(int serializedAction)
         {
             if (IsWallAction(serializedAction)) return DeserializeWallAction(serializedAction);
             return DeserializeMoveAction(serializedAction);
         }
 
-        private static QuoridorWallAction DeserializeWallAction(int serializedAction)
+        public static QuoridorWallAction DeserializeWallAction(int serializedAction)
         {
-            var shiftedAction = serializedAction >> 8;
-            var orientation = shiftedAction % 4;
+            var orientation = serializedAction / QuoridorWallAction.WALL_SERIALIZATION_FACTOR;
+            var remainder = serializedAction % QuoridorWallAction.WALL_SERIALIZATION_FACTOR;
+            var col = remainder / DIMENSION;
+            var row = remainder % DIMENSION;
             if (orientation == 3)
             {
                 throw new InvalidOperationException("3 is not a creative color");
             }
-            shiftedAction >>= 2;
-            var row = shiftedAction % SUBDIMENSION;
-            var col = shiftedAction / SUBDIMENSION;
             return new QuoridorWallAction
             {
                 Col = col,
@@ -196,11 +195,13 @@ namespace Server.Game.Quoridor
                 Orientation = (WallOrientation) orientation
             };
         }
-        private static QuoridorMoveAction DeserializeMoveAction(int serializedAction)
+        public static QuoridorMoveAction DeserializeMoveAction(int serializedAction)
         {
+            var col = serializedAction / DIMENSION;
+            var row = serializedAction % DIMENSION;
             return new QuoridorMoveAction
             {
-                Cell = new QuoridorCell(serializedAction % SUBDIMENSION, serializedAction / SUBDIMENSION)
+                Cell = new QuoridorCell(row, col)
             };
 
         }

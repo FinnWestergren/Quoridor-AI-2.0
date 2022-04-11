@@ -16,7 +16,7 @@ export function updateState(newState) {
     const pwc = newState.playerWallCounts
     const pp = newState.playerPositions
     if (pwc && typeof pwc === "string") newState.playerWallCounts = JSON.parse(pwc)
-    if (pp && typeof pp === "string") newState.playerPositions = JSON.parse(pp)
+    if (pp && typeof pp === "string") newState.playerPositions = JSON.parse(pp.toLowerCase()) // THIS IS SKETCHY Row -> row, Col -> col TODO REFACTOR BACKEND
     window[gameStateKey] = newState;
 }
 
