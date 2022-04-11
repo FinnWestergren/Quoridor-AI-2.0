@@ -1,4 +1,4 @@
-import { NewGame } from "../shared/api/sharedApi.js";
+import { FetchPossibleActions, NewGame } from "../shared/api/sharedApi.js";
 import { getGameState, GameStates } from "../shared/state/sharedState.js";
 import { draw as drawBoard } from "./sketch/board.js"
 import { draw as drawPS } from "../shared/sketch/playerSelectScreen.js"
@@ -6,6 +6,7 @@ import { draw as drawPS } from "../shared/sketch/playerSelectScreen.js"
 export const setup = async () => {
     window.controller = "quoridor"
     await NewGame()
+    await FetchPossibleActions()
 }
 
 export const draw = () => {

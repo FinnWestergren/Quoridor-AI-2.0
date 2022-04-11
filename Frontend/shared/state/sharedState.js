@@ -12,10 +12,11 @@ function getState() {
 }
 
 export function updateState(newState) {
+    console.log(newState);
     const pwc = newState.playerWallCounts
     const pp = newState.playerPositions
-    if (pwc) newState.playerWallCounts = JSON.parse(pwc)
-    if (pp) newState.playerPositions = JSON.parse(pp)
+    if (pwc && typeof pwc === "string") newState.playerWallCounts = JSON.parse(pwc)
+    if (pp && typeof pp === "string") newState.playerPositions = JSON.parse(pp)
     window[gameStateKey] = newState;
 }
 

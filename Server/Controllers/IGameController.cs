@@ -9,7 +9,7 @@ namespace Server.Controllers
         ActionResult CommitAction(ActionInputModel action);
         ActionResult GetGame(Guid gameId);
         ActionResult GetMinimaxMove(Guid gameId, Guid playerId);
-        ActionResult GetPossibleMoves(Guid gameId, Guid? playerId = null);
+        ActionResult GetPossibleActions(Guid gameId, Guid? playerId = null);
         ActionResult IsWinCondition(Guid gameId, Guid playerId);
         ActionResult NewGame(string board = null);
         ActionResult PrintBoard(Guid gameId);

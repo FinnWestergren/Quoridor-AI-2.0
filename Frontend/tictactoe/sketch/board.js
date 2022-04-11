@@ -63,12 +63,13 @@ const fillTile = ({row, col, occupiedBy}) => {
     window.tf.pop();
 }
 
-
-window.addEventListener('click', () => {
-    const board = getBoard();
-    const mousedTile = mousedOverTile(board);
-    if (mousedTile) {
-        const event = new CustomEvent("human_action", {detail: {action: async () => await optimisticallyCommitAction(mousedTile.serializedCell, board)}});
-        window.dispatchEvent(event)
-    }
-});
+export const setup = () => {
+    window.addEventListener('click', () => {
+        const board = getBoard();
+        const mousedTile = mousedOverTile(board);
+        if (mousedTile) {
+            const event = new CustomEvent("human_action", {detail: {action: async () => await optimisticallyCommitAction(mousedTile.serializedCell, board)}});
+            window.dispatchEvent(event)
+        }
+    });
+}

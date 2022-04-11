@@ -56,8 +56,8 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/GetPossibleMoves")]
-        public ActionResult GetPossibleMoves(Guid gameId, Guid? playerId = null)
+        [Route("[controller]/GetPossibleActions")]
+        public ActionResult GetPossibleActions(Guid gameId, Guid? playerId = null)
         {
             var game = _presentationService.GetGame(gameId);
             var moveSet = game.GetPossibleMoves(playerId ?? game.PlayerOne);

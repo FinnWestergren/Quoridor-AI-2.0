@@ -55,12 +55,12 @@ namespace Server.Controllers
         }
 
         [HttpGet]
-        [Route("[controller]/GetPossibleMoves")]
-        public ActionResult GetPossibleMoves(Guid gameId, Guid? playerId = null)
+        [Route("[controller]/GetPossibleActions")]
+        public ActionResult GetPossibleActions(Guid gameId, Guid? playerId = null)
         {
             var game = _presentationService.GetGame(gameId);
             var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(game.CurrentBoard, playerId ?? game.PlayerOne);
-            return new JsonResult(new { moveActions, wallActions });
+            return new JsonResult(new { possibleActions = new { moveActions, wallActions } });
         }
 
         [HttpGet]

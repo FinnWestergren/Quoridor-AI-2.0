@@ -5,6 +5,8 @@ export const p2Color = "#3d405b"
 export const wallColor = "#81b29a"
 export const tileColor = "#f2cc8f"
 export const ghostTileColor = "#f2cc8f55"
+export const validMoveColor = "#81b29a"
+export const invalidMoveColor = "#e07a5f"
 
 
 export const getPlayerColor = (playerId) => {

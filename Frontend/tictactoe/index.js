@@ -1,5 +1,5 @@
 import { getGameState, GameStates } from "../shared/state/sharedState.js";
-import { draw as drawBoard } from "./sketch/board.js"
+import { draw as drawBoard, setup as setupBoard } from "./sketch/board.js"
 import { draw as drawPS } from "../shared/sketch/playerSelectScreen.js"
 import { draw as drawGO } from "../shared/sketch/gameOverScreen.js"
 import { NewGame, GetMinimaxAction } from "../shared/api/sharedApi.js";
@@ -9,6 +9,7 @@ import { useMutex } from "../shared/utilities/mutex.js";
 export const setup = async () => {
     window.controller = "tictactoe"
     await NewGame()
+    setupBoard()
 }
 
 window.drawWaitOverlay = false;
