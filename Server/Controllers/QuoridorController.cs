@@ -93,7 +93,7 @@ namespace Server.Controllers
 
         private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, IGame game, bool ABPrune = true)
         {
-            var agent = new MiniMaxAgent(playerId, isABPruningEnabled: ABPrune);
+            var agent = new MiniMaxAgent(playerId, isABPruningEnabled: ABPrune, maxSearchDepth: 2);
             var (time, result) = ActionTimer.TimeFunction(() => agent.GetNextAction(game));
             return (result, agent.NodeCount, time);
         }

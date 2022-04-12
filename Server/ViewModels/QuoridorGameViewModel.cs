@@ -21,9 +21,12 @@ namespace Server.ViewModels
         public static QuoridorGameViewModel FromGame(Quoridor game)
         {
             Guid? winner = null;
-            var value = game.GetBoardValue(game.PlayerOne);
-            if (value > 0) winner = game.PlayerOne;
-            if (value < 0) winner = game.PlayerTwo;
+            if (game.IsGameOver())
+            {
+                var value = game.GetBoardValue(game.PlayerOne);
+                if (value > 0) winner = game.PlayerOne;
+                if (value < 0) winner = game.PlayerTwo;
+            }
 
 
             return new QuoridorGameViewModel

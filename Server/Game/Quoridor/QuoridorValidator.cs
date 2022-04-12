@@ -75,7 +75,7 @@ namespace Server.Game.Quoridor
                 return (false, new InvalidOperationException("player doesn't have any walls left"));
             }
 
-            var wallSlot = board.Walls[action.Row, action.Col];
+            var wallSlot = board.Walls[action.Col, action.Row];
             if (wallSlot != WallOrientation.None)
             {
                 return (false, new InvalidOperationException("wall slot occupied"));

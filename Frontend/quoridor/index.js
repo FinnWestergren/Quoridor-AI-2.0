@@ -26,7 +26,7 @@ export const setup = async () => {
             window.drawWaitOverlay = true;
             e.detail.action().then(() =>
                 GetMinimaxAction().then(() =>
-                    FetchPossibleActions
+                    FetchPossibleActions()
                 )
             );
             window.drawWaitOverlay = false;
