@@ -24,9 +24,13 @@ namespace Server.Utilities
 
         public static IEnumerable<T> From2DArray(T[,] array)
         {
-            foreach (var v in array)
+            var sidelength = (int) Math.Sqrt(array.Length);
+            for (int row = 0; row < sidelength; row++)
             {
-                yield return v;
+                for (int col = 0; col < sidelength; col++)
+                {
+                    yield return array[col, row];
+                }
             }
         }
 
@@ -34,11 +38,11 @@ namespace Server.Utilities
         public static IEnumerable<IEnumerable<T>> ToSquareEnumerable(T[,] input)
         {
             int sideLength = (int) Math.Sqrt(input.Length);
-            IEnumerable<T> getRow(int row)
+            IEnumerable<T> getRow(int col)
             {
                 for (int i = 0; i < sideLength; i++)
                 {
-                    yield return input[i, row];
+                    yield return input[col, i];
                 }
             }
 

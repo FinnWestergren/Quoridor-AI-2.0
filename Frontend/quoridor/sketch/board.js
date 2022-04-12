@@ -57,10 +57,12 @@ const mouseWithinWallSlot = (row, col, r) => {
 }
 
 const getValidMove = (row, col) => {
+    if (getPossibleMoveActions())
     return getPossibleMoveActions().find(c => c.cell.row == row && c.cell.col == col)
 }
 
 const getValidWall = (row, col, r) => {
+    if (getPossibleWallActions())
     return getPossibleWallActions().find(c => c.row == row && c.col == col && c.orientation == r)
 }
 
@@ -132,15 +134,15 @@ const drawWalls = (walls) => {
             moused = tryDrawWallAction(i, j, r);
         }
     }
-    for (let i = 0; i < walls.length; i++){
-        for (let j = 0; j < walls.length; j++){
-            const wall = walls[j][i]
+    for (let col = 0; col < walls.length; col++) {
+        for (let row = 0; row < walls.length; row++) {
+            const wall = walls[col][row]
             if (wall) {
-                drawWall(i,j, wall);
+                drawWall(row, col, wall);
                 continue;
             }
-            drawWallAction(i, j, 1);
-            drawWallAction(i, j, 2);
+            drawWallAction(row, col, 1);
+            drawWallAction(row, col, 2);
         }
     }
 }

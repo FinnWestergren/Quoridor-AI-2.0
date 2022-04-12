@@ -116,9 +116,9 @@ namespace Server.Game.Quoridor
         public void SetPlayerPosition(Guid committedBy, QuoridorCell cell)
         {
             var oldCell = _playerPositions[committedBy];
-            Cells[oldCell.Row, oldCell.Col].OccupiedBy = null;
+            Cells[oldCell.Col, oldCell.Row].OccupiedBy = null;
             _playerPositions[committedBy] = cell;
-            Cells[cell.Row, cell.Col].OccupiedBy = committedBy;
+            Cells[cell.Col, cell.Row].OccupiedBy = committedBy;
         }
 
         private void EvaluatePlayerPositions()

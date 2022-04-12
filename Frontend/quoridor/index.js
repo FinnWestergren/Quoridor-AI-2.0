@@ -24,8 +24,11 @@ export const setup = async () => {
         if (isOnDebouceCooldown()) return;
         useMutex(async () => {
             window.drawWaitOverlay = true;
-            const success = await e.detail.action();
-            if (success) await GetMinimaxAction();
+            e.detail.action().then(() =>
+                GetMinimaxAction().then(() =>
+                    FetchPossibleActions
+                )
+            );
             window.drawWaitOverlay = false;
         }, 'human_action')
     });

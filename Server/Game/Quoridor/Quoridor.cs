@@ -35,6 +35,7 @@ namespace Server.Game.Quoridor
             {
                 throw new Exception("Game's already over.");
             }
+            var print = QuoridorUtilities.PrintHumanReadableBoard(CurrentBoard);
             _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
             WhosTurn = GetEnemyId(playerId);
         }
