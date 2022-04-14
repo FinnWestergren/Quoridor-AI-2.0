@@ -85,11 +85,71 @@ namespace Server.Game.Quoridor
                 })
                 .Where(action =>
                 {
-                    var newBoard = CommitAction(action, board);
-                    return QuoridorValidator.IsValidBoard(newBoard).value; // very expensive. I would say we want to check if this is even a necessary check.
+                    if(CheckWallTouching(action, board))
+                    {
+                        var newBoard = CommitAction(action, board);
+                        return QuoridorValidator.IsValidBoard(newBoard).value; // very expensive. I would say we want to check if this is even a necessary check before performing.
+                    }
+                    return true;
+
                 });
 
             return (moveActions, wallActions);
+        }
+
+        private static bool CheckWallTouching(QuoridorWallAction action, QuoridorBoard board)
+        {
+            if (CheckWallTouchingEdge(action, board)) return true;
+            var col = action.Col;
+            var row = action.Row;
+            var left = col + 1;
+            var right = col - 1;
+            var bottom = row + 1;
+            var top = row - 1;
+
+            bool withinBounds(int val)
+            {
+                return val <= SUBDIMENSION - 1 && val >= 0;
+            }
+
+            if (action.Orientation == WallOrientation.Horizontal)
+            {
+                if (board.Walls[left, row] == WallOrientation.Vertical || board.Walls[right, row] == WallOrientation.Vertical) return true;
+                if (withinBounds(left - 1) && board.Walls[left - 1, row] == WallOrientation.Horizontal) return true;
+                if (withinBounds(right + 1) && board.Walls[right + 1, row] == WallOrientation.Horizontal) return true;
+                if (withinBounds(top) && board.Walls[col, top] == WallOrientation.Vertical) return true;
+                if (withinBounds(bottom) && board.Walls[col, bottom] == WallOrientation.Vertical) return true;
+            }
+
+            if (action.Orientation == WallOrientation.Vertical)
+            {
+                if (board.Walls[col, top] == WallOrientation.Vertical || board.Walls[col, bottom] == WallOrientation.Horizontal) return true;
+                if (withinBounds(top - 1) && board.Walls[col, top - 1] == WallOrientation.Vertical) return true;
+                if (withinBounds(bottom + 1) && board.Walls[col, bottom + 1] == WallOrientation.Vertical) return true;
+                if (withinBounds(right) && board.Walls[right, row] == WallOrientation.Horizontal) return true;
+                if (withinBounds(left) && board.Walls[left, row] == WallOrientation.Horizontal) return true;
+            }
+            return false;
+        }
+
+        private static bool CheckWallTouchingEdge(QuoridorWallAction action, QuoridorBoard board)
+        {
+            if (action.Orientation == WallOrientation.Horizontal)
+            {
+                if (action.Col == 0 || action.Col == SUBDIMENSION - 1)
+                {
+                    return true;
+                }
+            }
+
+            if (action.Orientation == WallOrientation.Vertical)
+            {
+                if (action.Row == 0 || action.Row == SUBDIMENSION - 1)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static bool IsWinCondition(Guid playerId, QuoridorBoard board)
