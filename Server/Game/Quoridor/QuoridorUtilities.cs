@@ -98,6 +98,7 @@ namespace Server.Game.Quoridor
             return (moveActions, wallActions);
         }
 
+        // TODO re-write this and make tests
         private static bool CheckWallTouching(QuoridorWallAction action, QuoridorBoard board)
         {
             if (CheckWallTouchingEdge(action, board)) return true;
@@ -124,7 +125,7 @@ namespace Server.Game.Quoridor
 
             if (action.Orientation == WallOrientation.Vertical)
             {
-                if (board.Walls[col, top] == WallOrientation.Vertical || board.Walls[col, bottom] == WallOrientation.Horizontal) return true;
+                if (board.Walls[col, top] == WallOrientation.Horizontal || board.Walls[col, bottom] == WallOrientation.Horizontal) return true;
                 if (withinBounds(top - 1) && board.Walls[col, top - 1] == WallOrientation.Vertical) return true;
                 if (withinBounds(bottom + 1) && board.Walls[col, bottom + 1] == WallOrientation.Vertical) return true;
                 if (withinBounds(right) && board.Walls[right, row] == WallOrientation.Horizontal) return true;
