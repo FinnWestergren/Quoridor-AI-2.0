@@ -48,8 +48,8 @@ namespace Tests.Agent
             initialGame.Setup(g => g.GetPossibleMoves(_playerId)).Returns(GetNextActions);
 
             initialGame.Setup(g => g.UndoAction()).Callback(() => _game = initialGame.Object);
-            initialGame.Setup(g => g.CommitAction(_winningAction, _playerId)).Callback(() => _selectedAction = _winningAction);
-            initialGame.Setup(g => g.CommitAction(_losingAction, _playerId)).Callback(() => _selectedAction = _losingAction);
+            initialGame.Setup(g => g.CommitAction(_winningAction, _playerId, false)).Callback(() => _selectedAction = _winningAction);
+            initialGame.Setup(g => g.CommitAction(_losingAction, _playerId, false)).Callback(() => _selectedAction = _losingAction);
 
             _game = initialGame.Object;
             _agent = new MiniMaxAgent(_playerId);

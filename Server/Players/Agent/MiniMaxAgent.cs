@@ -45,7 +45,7 @@ namespace Server.Players.Agent
             var alpha = DEFAULT_ALPHA;
             foreach (var move in possibleMoves)
             {
-                game.CommitAction(move.SerializedAction, PlayerId);
+                game.CommitAction(move.SerializedAction, PlayerId, true);
                 var value = MinMove(game, depth + 1, alpha);
                 game.UndoAction();
                 if (value > maxSoFar)
@@ -75,7 +75,7 @@ namespace Server.Players.Agent
             var beta = DEFAULT_BETA;
             foreach (var move in possibleMoves)
             {
-                game.CommitAction(move.SerializedAction, enemyId);
+                game.CommitAction(move.SerializedAction, enemyId, true);
                 var value = MaxMove(game, depth + 1, beta).value;
                 game.UndoAction();
                 if (value < minSoFar)

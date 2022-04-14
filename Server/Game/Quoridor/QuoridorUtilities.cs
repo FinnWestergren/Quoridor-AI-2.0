@@ -55,10 +55,12 @@ namespace Server.Game.Quoridor
             return output;
         }
 
-        public static QuoridorBoard TryCommitActionToBoard(int serializedAction, QuoridorBoard board, Guid commitedBy)
+        public static QuoridorBoard TryCommitActionToBoard(int serializedAction, QuoridorBoard board, Guid commitedBy, bool skipValidation = false)
         {
+
             var action = DeserializeAction(serializedAction);
             action.CommittedBy = commitedBy;
+            if (skipValidation) return CommitAction(action, board);
             QuoridorValidator.AssertValidAction(action, board);
             var newBoard = CommitAction(action, board);
             QuoridorValidator.AssertValidBoard(newBoard);

@@ -25,7 +25,7 @@ namespace Server.Game.Quoridor
             GameId = Guid.NewGuid();
         }
 
-        public void CommitAction(int serializedAction, Guid playerId)
+        public void CommitAction(int serializedAction, Guid playerId, bool skipValidation = false)
         {
             if (WhosTurn != playerId)
             {
@@ -35,7 +35,7 @@ namespace Server.Game.Quoridor
             {
                 throw new Exception("Game's already over.");
             }
-            _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
+            _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId, skipValidation));
             WhosTurn = GetEnemyId(playerId);
         }
 

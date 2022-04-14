@@ -8,7 +8,7 @@ namespace Server.Game
         Guid PlayerOne { get; }
         Guid PlayerTwo { get; }
         Guid GameId { get; set; }
-        void CommitAction(int serializedAction, Guid playerId);
+        void CommitAction(int serializedAction, Guid playerId, bool skipValidation = false);
         void UndoAction();
         string GameType();
         IEnumerable<IGameAction> GetPossibleMoves(Guid playerId); 

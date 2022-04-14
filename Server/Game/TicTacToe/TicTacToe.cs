@@ -32,7 +32,7 @@ namespace Server.Game.TicTacToe
             GameId = gameId;
         }
 
-        public void CommitAction(int serializedAction, Guid playerId)
+        public void CommitAction(int serializedAction, Guid playerId, bool skipValidation = false)
         {
             if(_whoWentLast == playerId)
             {
