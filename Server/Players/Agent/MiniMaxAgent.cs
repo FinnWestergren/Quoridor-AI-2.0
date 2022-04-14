@@ -23,6 +23,7 @@ namespace Server.Players.Agent
 
         public IGameAction GetNextAction(IGame game) 
         {
+            NodeCount = 0;
             var (_, action) = MaxMove(game);
             return action;
         }
@@ -31,8 +32,12 @@ namespace Server.Players.Agent
         {
             NodeCount++;
             var possibleMoves = game.GetPossibleMoves(PlayerId);
-            if (!possibleMoves.Any() || depth > _maxSearchDepth)
+            if (!possibleMoves.Any() || depth > _maxSearchDepth || game.IsGameOver())
             {
+                if (game.IsGameOver())
+                {
+
+                }
                 return (game.GetBoardValue(PlayerId), null);
             }
             var maxSoFar = Int32.MinValue;
@@ -62,7 +67,7 @@ namespace Server.Players.Agent
             NodeCount++;
             var enemyId = game.GetEnemyId(PlayerId);
             var possibleMoves = game.GetPossibleMoves(enemyId);
-            if (!possibleMoves.Any() || depth > _maxSearchDepth)
+            if (!possibleMoves.Any() || depth > _maxSearchDepth || game.IsGameOver())
             {
                 return game.GetBoardValue(PlayerId);
             }

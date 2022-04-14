@@ -1,0 +1,11 @@
+Move,Nodes,Time
+1,18007,5030
+2,21884,5673
+3,21913,5433
+4,21804,4838
+5,24169,4278
+6,21190,2628
+7,20636,1684
+8,17922,939
+Total,167525,30503
+Notes, Shaved 9 Seconds off by refactoring IsGameOver to not use BFS

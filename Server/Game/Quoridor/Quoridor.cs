@@ -35,16 +35,7 @@ namespace Server.Game.Quoridor
             {
                 throw new Exception("Game's already over.");
             }
-            var print = QuoridorUtilities.PrintHumanReadableBoard(CurrentBoard);
-            try
-            {
-                _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
-            }
-            catch (Exception e)
-            { 
-                var moves = GetPossibleMoves(playerId);
-                throw e;
-            }
+            _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, playerId));
             WhosTurn = GetEnemyId(playerId);
         }
 
@@ -63,7 +54,11 @@ namespace Server.Game.Quoridor
 
         public int GetBoardValue(Guid playerId)
         {
-            return PathValidator.GetDistanceForPlayer(CurrentBoard, GetEnemyId(playerId)) - PathValidator.GetDistanceForPlayer(CurrentBoard, playerId);
+            var enemyDist = PathValidator.GetDistanceForPlayer(CurrentBoard, GetEnemyId(playerId));
+            var playerDist = PathValidator.GetDistanceForPlayer(CurrentBoard, playerId);
+            if (enemyDist == 0) return Int32.MinValue + 1; // cant actually be min or max cuz that fux w minimax lol
+            if (playerDist == 0) return Int32.MaxValue - 1;
+            return enemyDist - playerDist;
         }
 
         public Guid GetEnemyId(Guid playerId)
@@ -73,6 +68,6 @@ namespace Server.Game.Quoridor
             throw new Exception($"Invalid Player Id {playerId}");
         }
 
-        public bool IsGameOver() => PathValidator.GetDistanceForPlayer(CurrentBoard, PlayerOne) == 0 || PathValidator.GetDistanceForPlayer(CurrentBoard, PlayerTwo) == 0;
+        public bool IsGameOver() => CurrentBoard.PlayerPositions[PlayerOne].Row == 0 || CurrentBoard.PlayerPositions[PlayerTwo].Row == QuoridorUtilities.DIMENSION - 1;
     }
 }

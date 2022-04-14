@@ -47,7 +47,7 @@ namespace Server.Controllers
         public ActionResult GetMinimaxMove(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var move = GetMinimaxMove(playerId, game).action;
+            var (move, nodes, time) = GetMinimaxMove(playerId, game);
             if (move != null)
             {
                 game.CommitAction(move.SerializedAction, playerId);

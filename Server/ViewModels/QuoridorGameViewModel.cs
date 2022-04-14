@@ -38,8 +38,7 @@ namespace Server.ViewModels
                 PlayerTwo = game.PlayerTwo,
                 GameId = game.GameId,
                 Winner = winner,
-                WhosTurn = game.WhosTurn,
-
+                WhosTurn = game.WhosTurn
             };
         }
     }

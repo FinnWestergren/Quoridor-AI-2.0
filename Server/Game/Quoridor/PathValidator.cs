@@ -17,20 +17,16 @@ namespace Server.Game.Quoridor
         public static int GetDistanceForPlayer(QuoridorBoard board, Guid player)
         {
             var yDestination = player == board.PlayerOne ? 0 : QuoridorUtilities.DIMENSION - 1;
-            return BFS(board.PlayerPositions[player], yDestination, board).distance;
+            return BFS(board.PlayerPositions[player], yDestination, board);
         }
 
-        private static bool IsPathClearForPlayer(QuoridorBoard board, Guid player)
-        {
-            var yDestination = player == board.PlayerOne ? 0 : QuoridorUtilities.DIMENSION - 1;
-            return BFS(board.PlayerPositions[player], yDestination, board).value;
-        }
+        private static bool IsPathClearForPlayer(QuoridorBoard board, Guid player) => GetDistanceForPlayer(board, player) != int.MaxValue;
 
-        // Naive approach just to get things started. I have a feeling I'll need to optimize this.
-        private static (bool value, int distance) BFS(QuoridorCell start, int yDest, QuoridorBoard board)
+        // Naive approach just to get things started. I have a feeling I'll need to memoize this.
+        private static int BFS(QuoridorCell start, int yDest, QuoridorBoard board)
         {
             var queue = new Queue<(QuoridorCell cell, int depth)>();
-            var visited = new List<int>();
+            var visited = new List<int>(); // could optimize this lookup, not really important
             void push (QuoridorCell cell, int depth) {
                 queue.Enqueue((cell, depth));
                 visited.Add(cell.SerializedCell(QuoridorUtilities.DIMENSION));
@@ -40,15 +36,15 @@ namespace Server.Game.Quoridor
             while (queue.Count > 0)
             {
                 var (cell, depth) = queue.Dequeue();
+                if (cell.Row == yDest) return depth;
                 var avaliableDestinations = board.GetAvailableDestinations(cell)
                     .Where(c => !visited.Contains(c.SerializedCell(QuoridorUtilities.DIMENSION)))
                     .OrderBy(c => Math.Abs(yDest - c.Row)); // gg ez
                 foreach (var dest in avaliableDestinations) {
-                    if (dest.Row == yDest) return (true, depth + 1);
                     push(dest, depth + 1);
                 }
             }
-            return (false, int.MaxValue);
+            return int.MaxValue;
         }
     }
 }
