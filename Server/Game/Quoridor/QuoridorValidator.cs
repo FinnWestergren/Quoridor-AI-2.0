@@ -32,7 +32,7 @@ namespace Server.Game.Quoridor
         public static (bool value, Exception error) IsValidBoard(QuoridorBoard board)
         {
             if (board.IsValidated) return (true, null);
-            var wallValidation = ValidateWalls(board);
+            var wallValidation = ValidateWallCounts(board);
             var pathValidation = PathValidator.ValidatePath(board);
 
             var outputBool = wallValidation.value && pathValidation.value;
@@ -40,7 +40,7 @@ namespace Server.Game.Quoridor
             board.IsValidated = outputBool;
             return (outputBool, outputError);
         }
-        private static (bool value, Exception error) ValidateWalls(QuoridorBoard board)
+        public static (bool value, Exception error) ValidateWallCounts(QuoridorBoard board)
         {
             var walls = board.Walls;
             var list = EnumerableUtilities<WallOrientation>.From2DArray(walls);

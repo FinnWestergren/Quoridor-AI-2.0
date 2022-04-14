@@ -74,7 +74,7 @@ namespace Server.Game.Quoridor
             });
 
             if (board.PlayerWallCounts[playerId] <= 0) return (moveActions, new List<QuoridorWallAction>());
-            var slots = board.GetEmptyWallSlots().ToList();
+            var slots = board.GetEmptyWallSlots();
             var wallActions = slots
                 .Select(ws => new QuoridorWallAction
                 {
@@ -85,13 +85,12 @@ namespace Server.Game.Quoridor
                 })
                 .Where(action =>
                 {
-                    if(CheckWallTouching(action, board))
+                    if(CheckWallTouching(action, board)) // pre-check if it's even possible that this is blocking
                     {
                         var newBoard = CommitAction(action, board);
-                        return QuoridorValidator.IsValidBoard(newBoard).value; // very expensive. I would say we want to check if this is even a necessary check before performing.
+                        return QuoridorValidator.IsValidBoard(newBoard).value; // if the wall is touching we have to make sure that this is not blocking
                     }
                     return true;
-
                 });
 
             return (moveActions, wallActions);
