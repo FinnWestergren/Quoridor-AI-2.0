@@ -1,5 +1,6 @@
 ﻿using CsvHelper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Server.Game;
 using Server.Game.Quoridor;
 using Server.Players.Agent;
 using Server.Utilities;
@@ -22,11 +23,38 @@ namespace Tests.Agent
         }
 
         [TestMethod]
+        public void TestDepthOneQuoridor()
+        {
+            var game = new Quoridor();
+            var p1 = new MiniMaxAgent(game.PlayerOne, 1);
+            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
+            
+            WriteResults("DepthOneQuoridor", RunBots(p1,p2,game));
+        }
+
+        [TestMethod]
         public void TestDepthTwoQuoridor()
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 2);
-            var p2 = new MiniMaxAgent(game.PlayerTwo, 0);
+            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
+
+            WriteResults("DepthTwoQuoridor", RunBots(p1, p2, game));
+        }
+
+        [TestMethod]
+        public void TestDepthThreeQuoridor()
+        {
+            var game = new Quoridor();
+            var p1 = new MiniMaxAgent(game.PlayerOne, 3);
+            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
+
+            WriteResults("DepthThreeQuoridor", RunBots(p1, p2, game));
+        }
+
+
+        private List<Result> RunBots(MiniMaxAgent p1, MiniMaxAgent p2, IGame game)
+        {
             var results = new List<Result>();
             var move = 1;
             while (!game.IsGameOver())
@@ -52,14 +80,20 @@ namespace Tests.Agent
                 Nodes = results.Sum(r => r.Nodes),
                 Time = results.Sum(r => r.Time)
             });
-            WriteResults("DepthTwoQuoridor", results);
+            results.Add(new Result
+            {
+                Move = "Avg",
+                Nodes = (int)results.Average(r => r.Nodes),
+                Time = (int)results.Average(r => r.Time)
+            });
+            return results;
         }
 
         private void WriteResults(string testType, List<Result> results)
         {
-            var path = @"C:\Users\fwest\Documents\GitHub\Quoridor-AI-2.0\TestOutput\";
+            var path = $@"C:\Users\fwest\Documents\GitHub\Quoridor-AI-2.0\TestOutput\{testType}\";
             var dateString = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
-            var filename = $"{dateString}_{testType}.csv";
+            var filename = $"{dateString}.csv";
             using (var writer = new StreamWriter(path + filename))
             using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
             {
