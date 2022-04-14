@@ -7,6 +7,7 @@ namespace Server.Game.Quoridor
 {
     public class QuoridorBoard
     {
+        public bool IsValidated { get; set; } = false;
         public WallOrientation[,] Walls { get; set; }
         public QuoridorCell[,] Cells { get; set; }
         public Dictionary<Guid, int> PlayerWallCounts { get; set; }

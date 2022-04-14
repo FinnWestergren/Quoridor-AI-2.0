@@ -86,7 +86,7 @@ namespace Server.Game.Quoridor
                 .Where(action =>
                 {
                     var newBoard = CommitAction(action, board);
-                    return QuoridorValidator.IsValidBoard(newBoard).value;
+                    return QuoridorValidator.IsValidBoard(newBoard).value; // very expensive. I would say we want to check if this is even a necessary check.
                 });
 
             return (moveActions, wallActions);
