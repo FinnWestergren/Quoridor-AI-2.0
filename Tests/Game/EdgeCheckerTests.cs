@@ -12,10 +12,10 @@ namespace Tests.Game
     {
 
         private string _testBoard =
-            "00000000" +
+            "0-000000" +
             "00000000" +
             "00-00000" +
-            "00000000" +
+            "00000|00" +
             "00000000" +
             "00000|00" +
             "00000000" +
@@ -64,7 +64,7 @@ namespace Tests.Game
             };
 
             var matches = actionsToTest.Where(a => EdgeChecker.CheckWallTouching(a, board));
-            Assert.AreEqual(actionsToTest.Count(), matches.Count());
+            Assert.AreEqual(2, matches.Count());
         }
 
 
@@ -85,7 +85,7 @@ namespace Tests.Game
             };
 
             var matches = actionsToTest.Where(a => EdgeChecker.CheckWallTouching(a, board));
-            Assert.AreEqual(actionsToTest.Count(), matches.Count());
+            Assert.AreEqual(3, matches.Count());
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace Tests.Agent
 {
@@ -50,6 +51,24 @@ namespace Tests.Agent
             var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
 
             WriteResults("DepthThreeQuoridor", RunBots(p1, p2, game));
+        }
+
+        [TestMethod]
+        public void BunchaTests()
+        {
+            var threads = new List<Thread>();
+            for (var i = 0; i < 4; i++)
+            {
+                threads.Add(new Thread(TestDepthOneQuoridor));
+                threads.Add(new Thread(TestDepthTwoQuoridor));
+                threads.Add(new Thread(TestDepthThreeQuoridor));
+            }
+
+            foreach (var t in threads)
+            {
+                t.Start();
+            }
+            while (threads.Any(t => t.IsAlive)) ;
         }
 
 

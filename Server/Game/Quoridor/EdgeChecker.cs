@@ -9,7 +9,8 @@ namespace Server.Game.Quoridor
     {
         public static bool CheckWallTouching(QuoridorWallAction action, QuoridorBoard board)
         {
-            if (CheckWallTouchingEdge(action)) return true;
+            var touchCount = 0;
+            if (CheckWallTouchingEdge(action)) touchCount++;
 
             bool checkMatch(int c, int r, WallOrientation o)
             {
@@ -63,7 +64,8 @@ namespace Server.Game.Quoridor
                 toCheck.Add(checkMatch(col, bottom, oppo));
             }
 
-            return toCheck.Any(x => x);
+            touchCount += toCheck.Where(x => x).Count();
+            return touchCount >= 2;
         }
 
         private static bool CheckWallTouchingEdge(QuoridorWallAction action)
