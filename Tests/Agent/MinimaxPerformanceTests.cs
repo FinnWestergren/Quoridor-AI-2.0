@@ -91,7 +91,8 @@ namespace Tests.Agent
 
         private void WriteResults(string testType, List<Result> results)
         {
-            var path = $@"C:\Users\fwest\Documents\GitHub\Quoridor-AI-2.0\TestOutput\{testType}\";
+            var path = $@"{getRootPath()}\TestOutput\{testType}\";
+            Directory.CreateDirectory(path);
             var dateString = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             var filename = $"{dateString}.csv";
             using (var writer = new StreamWriter(path + filename))
@@ -105,6 +106,15 @@ namespace Tests.Agent
                     csv.NextRecord();
                 }
             }
+        }
+
+
+        private string getRootPath()
+        {
+            var cd = Environment.CurrentDirectory;
+            var root = "Quoridor-AI-2.0";
+            var index = cd.IndexOf(root) + root.Length;
+            return $@"{cd.Substring(0, index)}";
         }
     }
 }
