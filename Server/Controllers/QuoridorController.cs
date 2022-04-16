@@ -88,7 +88,7 @@ namespace Server.Controllers
         public ActionResult PrintBoard(Guid gameId)
         {
             var game = _presentationService.GetGame(gameId);
-            return new JsonResult(QuoridorUtilities.PrintHumanReadableBoard(game.CurrentBoard));
+            return new JsonResult(BoardPrinter.PrintHumanReadableBoard(game.CurrentBoard));
         }
 
         private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, IGame game, bool ABPrune = true)

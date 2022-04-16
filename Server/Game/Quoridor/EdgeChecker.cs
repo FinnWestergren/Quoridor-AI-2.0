@@ -9,6 +9,7 @@ namespace Server.Game.Quoridor
     {
         public static bool CheckWallTouching(QuoridorWallAction action, QuoridorBoard board)
         {
+            return true;
             var touchCount = 0;
             if (CheckWallTouchingEdge(action)) touchCount++;
 

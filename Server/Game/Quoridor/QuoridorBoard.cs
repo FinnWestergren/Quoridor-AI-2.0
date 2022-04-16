@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Server.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -118,7 +119,7 @@ namespace Server.Game.Quoridor
         {
             var oldCell = PlayerPositions[committedBy];
             Cells[oldCell.Col, oldCell.Row].OccupiedBy = null;
-            _playerPositions[committedBy] = cell;
+            PlayerPositions[committedBy] = cell;
             Cells[cell.Col, cell.Row].OccupiedBy = committedBy;
         }
 
@@ -132,6 +133,47 @@ namespace Server.Game.Quoridor
                     _playerPositions.Add((Guid)cell.OccupiedBy, cell);
                 }
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as QuoridorBoard;
+            var selfWallList = EnumerableUtilities.From2DArray(Walls).ToArray();
+            var otherWallList = EnumerableUtilities.From2DArray(other.Walls).ToArray();
+            var selfCellList = EnumerableUtilities.From2DArray(Cells).ToArray();
+            var otherCellList = EnumerableUtilities.From2DArray(other.Cells).ToArray();
+
+            for (var i = 0; i < selfWallList.Length; i ++)
+            {
+                if (selfWallList[i] != otherWallList[i]) return false;
+            }
+
+            for (var i = 0; i < selfCellList.Length; i++)
+            {
+                if (!selfCellList[i].Equals(otherCellList[i])) return false;
+            }
+
+            if (!PlayerPositions[PlayerOne].Equals(other.PlayerPositions[other.PlayerOne])) return false;
+            if (!PlayerPositions[PlayerTwo].Equals(other.PlayerPositions[other.PlayerTwo])) return false;
+            if (!PlayerWallCounts[PlayerOne].Equals(other.PlayerWallCounts[other.PlayerOne])) return false;
+            if (!PlayerWallCounts[PlayerTwo].Equals(other.PlayerWallCounts[other.PlayerTwo])) return false;
+
+            return true;
+        }
+
+        public QuoridorBoard Copy()
+        {
+            var newCells = EnumerableUtilities.From2DArray(Cells)
+                .Select(c => new QuoridorCell(c.Row, c.Col, c.OccupiedBy));
+            var newWalls = EnumerableUtilities.From2DArray(Walls);
+            return new QuoridorBoard
+            {
+                Cells = EnumerableUtilities.ToSquareArray(newCells),
+                Walls = EnumerableUtilities.ToSquareArray(newWalls),
+                PlayerWallCounts = new Dictionary<Guid, int>(PlayerWallCounts),
+                PlayerOne = PlayerOne,
+                PlayerTwo = PlayerTwo
+            };
         }
     }
 }

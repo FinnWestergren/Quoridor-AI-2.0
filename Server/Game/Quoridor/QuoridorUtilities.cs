@@ -111,41 +111,10 @@ namespace Server.Game.Quoridor
             throw new Exception("Invalid Player Id");
         }
 
-        public static string PrintHumanReadableBoard(QuoridorBoard board)
-        {
-            var output = "";
-            foreach (int row in Enumerable.Range(0, DIMENSION))
-            {
-                var nextRow = "\n";
-                foreach (int col in Enumerable.Range(0, DIMENSION))
-                {
-                    var cell = board.Cells[col, row];
-                    if (cell.OccupiedBy == null) output += "[ ]";
-                    else if (cell.OccupiedBy == board.PlayerOne) output += "[1]";
-                    else if (cell.OccupiedBy == board.PlayerTwo) output += "[2]";
-
-                    var dests = board.GetAvailableDestinations(cell, false);
-                    if (col < SUBDIMENSION)
-                    {
-                        var cellRight = board.Cells[col + 1, row];
-                        if (!dests.Contains(cellRight)) output += "|";
-                        else output += " ";
-                    }
-                    if (row < SUBDIMENSION)
-                    {
-                        var cellDown = board.Cells[col, row + 1];
-                        if (!dests.Contains(cellDown)) nextRow += "--- ";
-                        else nextRow += "    ";
-                    }
-                }
-                output += nextRow + "\n";
-            }
-            return output;
-        }
 
         private static QuoridorBoard CommitAction(IGameAction action, QuoridorBoard board)
         {
-            var newBoard = CopyBoard(board);
+            var newBoard = board.Copy();
             if (IsWallAction(action.SerializedAction))
             {
                 var wallAction = (QuoridorWallAction) action;
@@ -158,22 +127,6 @@ namespace Server.Game.Quoridor
                 newBoard.SetPlayerPosition(moveAction.CommittedBy, moveAction.Cell);
             }
             return newBoard;
-        }
-
-        private static QuoridorBoard CopyBoard(QuoridorBoard board)
-        {
-            var newCells = EnumerableUtilities<QuoridorCell>.From2DArray(board.Cells)
-                .Select(c => new QuoridorCell(c.Row, c.Col));
-            var newWalls = EnumerableUtilities<WallOrientation>.From2DArray(board.Walls);
-            return new QuoridorBoard
-            {
-                Cells = EnumerableUtilities<QuoridorCell>.ToSquareArray(newCells, DIMENSION),
-                Walls = EnumerableUtilities<WallOrientation>.ToSquareArray(newWalls, DIMENSION),
-                PlayerWallCounts = new Dictionary<Guid, int>(board.PlayerWallCounts),
-                PlayerPositions = new Dictionary<Guid, QuoridorCell>(board.PlayerPositions),
-                PlayerOne = board.PlayerOne,
-                PlayerTwo = board.PlayerTwo
-            };
         }
 
         public static bool IsWallAction(int serializedAction) => serializedAction >= QuoridorWallAction.WALL_SERIALIZATION_FACTOR;
@@ -242,7 +195,7 @@ namespace Server.Game.Quoridor
                 _ => throw new InvalidBoardException("Wall string contains invalid character(s)")
             });
 
-            return EnumerableUtilities<WallOrientation>.ToSquareArray(allWalls, SUBDIMENSION);
+            return EnumerableUtilities.ToSquareArray(allWalls);
         }
 
         private static QuoridorCell[,] ParseCellString(string cellString, Guid p1, Guid p2)
@@ -267,7 +220,7 @@ namespace Server.Game.Quoridor
                 return new QuoridorCell(row, col, player);
             });
 
-            return EnumerableUtilities<QuoridorCell>.ToSquareArray(allCells, DIMENSION);
+            return EnumerableUtilities.ToSquareArray(allCells);
         }
 
         private static Dictionary<Guid, int> ParseWallCounts(string wallCounts, Guid p1, Guid p2)

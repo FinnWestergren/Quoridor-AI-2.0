@@ -71,7 +71,6 @@ namespace Tests.Game
             Assert.AreEqual(board.PlayerWallCounts[p1], 8);
             Assert.AreEqual(board.PlayerWallCounts[p2], 7);
             var distP2 = PathValidator.GetDistanceForPlayer(board, p2);
-            var print = QuoridorUtilities.PrintHumanReadableBoard(board);
             Assert.AreEqual(10, distP2);
         }
 
