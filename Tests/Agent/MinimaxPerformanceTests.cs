@@ -21,6 +21,7 @@ namespace Tests.Agent
             public string Move { get; set; }
             public int Nodes { get; set; }
             public long Time { get; set; }
+            public float TimePerNode => (float)Time / Nodes;
         }
 
         [TestMethod]
@@ -39,6 +40,7 @@ namespace Tests.Agent
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 2);
             var p2 = new RandomAgent(game.PlayerTwo);
+            // var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
 
             WriteResults("DepthTwoQuoridor", RunBots(p1, p2, game));
         }
@@ -80,18 +82,6 @@ namespace Tests.Agent
                 Move = "Total",
                 Nodes = results.Sum(r => r.Nodes),
                 Time = results.Sum(r => r.Time)
-            });
-            results.Add(new Result
-            {
-                Move = "Avg",
-                Nodes = (int)results.Average(r => r.Nodes),
-                Time = (int)results.Average(r => r.Time)
-            });
-            results.Add(new Result
-            {
-                Move = "Avg Over Threshold",
-                Nodes = (int)results.Average(r => r.Nodes),
-                Time = (int)results.Average(r => r.Time)
             });
             return results;
         }
