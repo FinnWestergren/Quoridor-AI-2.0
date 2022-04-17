@@ -13,6 +13,7 @@ namespace Tests.Agent
     {
         private IGame _game;
         private Guid _playerId = Guid.NewGuid();
+        private int _playerInt = 1;
         private const int _winningAction = 69; // nice
         private const int _losingAction = 70; // not nice :(
         private IAgent _agent;
@@ -22,11 +23,11 @@ namespace Tests.Agent
         {
             var winningMockAction = new Mock<IGameAction>();
             winningMockAction.Setup(a => a.SerializedAction).Returns(_winningAction);
-            winningMockAction.Setup(a => a.CommittedBy).Returns(_playerId);
+            winningMockAction.Setup(a => a.CommittedBy).Returns(_playerInt);
 
             var losingMockAction = new Mock<IGameAction>();
             losingMockAction.Setup(a => a.SerializedAction).Returns(_losingAction);
-            losingMockAction.Setup(a => a.CommittedBy).Returns(_playerId);
+            losingMockAction.Setup(a => a.CommittedBy).Returns(_playerInt);
 
             int ActionValue() => _selectedAction switch
             {

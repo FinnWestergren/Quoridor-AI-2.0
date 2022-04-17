@@ -55,11 +55,9 @@ namespace Tests.Game
         [TestMethod]
         public void ParsesSimpleBoard()
         {
-            Guid p1 = Guid.NewGuid();
-            Guid p2 = Guid.NewGuid();
-            var board = QuoridorUtilities.ParseBoard(_simpleTestBoard, p1, p2);
-            Assert.AreEqual(10, board.PlayerWallCounts[p1]);
-            Assert.AreEqual(9, board.PlayerWallCounts[p2]);
+            var board = QuoridorUtilities.ParseBoard(_simpleTestBoard);
+            Assert.AreEqual(10, board.PlayerWallCounts[1]);
+            Assert.AreEqual(9, board.PlayerWallCounts[2]);
         }
 
         [TestMethod]
@@ -67,10 +65,10 @@ namespace Tests.Game
         {
             Guid p1 = Guid.NewGuid();
             Guid p2 = Guid.NewGuid();
-            var board = QuoridorUtilities.ParseBoard(_complexTestBoard, p1, p2);
-            Assert.AreEqual(board.PlayerWallCounts[p1], 8);
-            Assert.AreEqual(board.PlayerWallCounts[p2], 7);
-            var distP2 = PathValidator.GetDistanceForPlayer(board, p2);
+            var board = QuoridorUtilities.ParseBoard(_complexTestBoard);
+            Assert.AreEqual(board.PlayerWallCounts[1], 8);
+            Assert.AreEqual(board.PlayerWallCounts[2], 7);
+            var distP2 = PathValidator.GetDistanceForPlayer(board, 2);
             Assert.AreEqual(10, distP2);
         }
 

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Server.Game.Quoridor
 {
@@ -11,8 +10,8 @@ namespace Server.Game.Quoridor
         public bool IsValidated { get; set; } = false;
         public WallOrientation[,] Walls { get; set; }
         public QuoridorCell[,] Cells { get; set; }
-        public Dictionary<Guid, int> PlayerWallCounts { get; set; }
-        public Dictionary<Guid, QuoridorCell> PlayerPositions
+        public Dictionary<int, int> PlayerWallCounts { get; set; }
+        public Dictionary<int, QuoridorCell> PlayerPositions
         {
             get
             {
@@ -28,9 +27,7 @@ namespace Server.Game.Quoridor
             }
         }
 
-        private Dictionary<Guid, QuoridorCell> _playerPositions = null;
-        public Guid PlayerOne { get; set; }
-        public Guid PlayerTwo { get; set; }
+        private Dictionary<int, QuoridorCell> _playerPositions = null;
 
         public IEnumerable<QuoridorCell> GetAvailableDestinations(QuoridorCell fromCell, bool concernedAboutOccupied = true)
         {
@@ -115,22 +112,22 @@ namespace Server.Game.Quoridor
                 }
             }
         }
-        public void SetPlayerPosition(Guid committedBy, QuoridorCell cell)
+        public void SetPlayerPosition(int committedBy, QuoridorCell cell)
         {
             var oldCell = PlayerPositions[committedBy];
-            Cells[oldCell.Col, oldCell.Row].OccupiedBy = null;
+            Cells[oldCell.Col, oldCell.Row].OccupiedBy = 0;
             PlayerPositions[committedBy] = cell;
             Cells[cell.Col, cell.Row].OccupiedBy = committedBy;
         }
 
         private void EvaluatePlayerPositions()
         {
-            _playerPositions = new Dictionary<Guid, QuoridorCell>();
+            _playerPositions = new Dictionary<int, QuoridorCell>();
             foreach (var cell in Cells)
             {
                 if (cell.IsOccupied)
                 {
-                    _playerPositions.Add((Guid)cell.OccupiedBy, cell);
+                    _playerPositions.Add(cell.OccupiedBy, cell);
                 }
             }
         }
@@ -153,10 +150,10 @@ namespace Server.Game.Quoridor
                 if (!selfCellList[i].Equals(otherCellList[i])) return false;
             }
 
-            if (!PlayerPositions[PlayerOne].Equals(other.PlayerPositions[other.PlayerOne])) return false;
-            if (!PlayerPositions[PlayerTwo].Equals(other.PlayerPositions[other.PlayerTwo])) return false;
-            if (!PlayerWallCounts[PlayerOne].Equals(other.PlayerWallCounts[other.PlayerOne])) return false;
-            if (!PlayerWallCounts[PlayerTwo].Equals(other.PlayerWallCounts[other.PlayerTwo])) return false;
+            if (!PlayerPositions[1].Equals(other.PlayerPositions[1])) return false;
+            if (!PlayerPositions[2].Equals(other.PlayerPositions[2])) return false;
+            if (!PlayerWallCounts[1].Equals(other.PlayerWallCounts[1])) return false;
+            if (!PlayerWallCounts[2].Equals(other.PlayerWallCounts[2])) return false;
 
             return true;
         }
@@ -170,9 +167,7 @@ namespace Server.Game.Quoridor
             {
                 Cells = EnumerableUtilities.ToSquareArray(newCells),
                 Walls = EnumerableUtilities.ToSquareArray(newWalls),
-                PlayerWallCounts = new Dictionary<Guid, int>(PlayerWallCounts),
-                PlayerOne = PlayerOne,
-                PlayerTwo = PlayerTwo
+                PlayerWallCounts = new Dictionary<int, int>(PlayerWallCounts)
             };
         }
     }

@@ -14,9 +14,8 @@ namespace Server.Game.Quoridor
                 foreach (int col in Enumerable.Range(0, QuoridorUtilities.DIMENSION))
                 {
                     var cell = board.Cells[col, row];
-                    if (cell.OccupiedBy == null) output += "[ ]";
-                    else if (cell.OccupiedBy == board.PlayerOne) output += "[1]";
-                    else if (cell.OccupiedBy == board.PlayerTwo) output += "[2]";
+                    if (cell.OccupiedBy == 0) output += "[ ]";
+                    else output += $"[{cell.OccupiedBy}]";
 
                     var dests = board.GetAvailableDestinations(cell, false);
                     if (col < QuoridorUtilities.SUBDIMENSION)

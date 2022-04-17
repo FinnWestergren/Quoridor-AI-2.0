@@ -36,7 +36,7 @@ namespace Server.Game.Quoridor
             "000010000" + 
             "_AA";
 
-        public static QuoridorBoard ParseBoard(string boardString, Guid p1, Guid p2)
+        public static QuoridorBoard ParseBoard(string boardString)
         {
             AssertValidBoardString(boardString);
 
@@ -44,18 +44,16 @@ namespace Server.Game.Quoridor
 
             var output = new QuoridorBoard
             {
-                PlayerWallCounts = ParseWallCounts(split[2], p1, p2),
-                Cells = ParseCellString(split[1], p1, p2),
-                Walls = ParseWallString(split[0]),
-                PlayerOne = p1,
-                PlayerTwo = p2
+                PlayerWallCounts = ParseWallCounts(split[2]),
+                Cells = ParseCellString(split[1]),
+                Walls = ParseWallString(split[0])
             };
 
             QuoridorValidator.AssertValidBoard(output);
             return output;
         }
 
-        public static QuoridorBoard TryCommitActionToBoard(int serializedAction, QuoridorBoard board, Guid commitedBy, bool skipValidation = false)
+        public static QuoridorBoard TryCommitActionToBoard(int serializedAction, QuoridorBoard board, int commitedBy, bool skipValidation = false)
         {
 
             var action = DeserializeAction(serializedAction);
@@ -67,15 +65,15 @@ namespace Server.Game.Quoridor
             return newBoard;
         }
 
-        public static (IEnumerable<QuoridorMoveAction> moveActions, IEnumerable<QuoridorWallAction> wallActions) GetPossibleMoves(QuoridorBoard board, Guid playerId)
+        public static (IEnumerable<QuoridorMoveAction> moveActions, IEnumerable<QuoridorWallAction> wallActions) GetPossibleMoves(QuoridorBoard board, int player)
         {
-            var moveActions = board.GetAvailableDestinations(board.PlayerPositions[playerId]).Select(cell => new QuoridorMoveAction
+            var moveActions = board.GetAvailableDestinations(board.PlayerPositions[player]).Select(cell => new QuoridorMoveAction
             {
                 Cell = cell,
-                CommittedBy = playerId
+                CommittedBy = player
             });
 
-            if (board.PlayerWallCounts[playerId] <= 0) return (moveActions, new List<QuoridorWallAction>());
+            if (board.PlayerWallCounts[player] <= 0) return (moveActions, new List<QuoridorWallAction>());
             var slots = board.GetEmptyWallSlots();
             var wallActions = slots
                 .Select(ws => new QuoridorWallAction
@@ -83,7 +81,7 @@ namespace Server.Game.Quoridor
                     Col = ws.Col,
                     Row = ws.Row,
                     Orientation = ws.Orientation,
-                    CommittedBy = playerId
+                    CommittedBy = player
                 })
                 .Where(action =>
                 {
@@ -97,14 +95,14 @@ namespace Server.Game.Quoridor
 
             return (moveActions, wallActions);
         }
-        public static bool IsWinCondition(Guid playerId, QuoridorBoard board)
+        public static bool IsWinCondition(int player, QuoridorBoard board)
         {
-            var pos = board.PlayerPositions[playerId];
-            if (board.PlayerOne == playerId)
+            var pos = board.PlayerPositions[player];
+            if (player == 1)
             {
                 return pos.Row == 0;
             }
-            if (board.PlayerTwo == playerId)
+            if (player == 2)
             {
                 return pos.Row == DIMENSION - 1;
             }
@@ -198,7 +196,7 @@ namespace Server.Game.Quoridor
             return EnumerableUtilities.ToSquareArray(allWalls);
         }
 
-        private static QuoridorCell[,] ParseCellString(string cellString, Guid p1, Guid p2)
+        private static QuoridorCell[,] ParseCellString(string cellString)
         {
 
             if (cellString.Length != _cellCount)
@@ -208,11 +206,11 @@ namespace Server.Game.Quoridor
 
             var allCells = cellString.Select((c, i) =>
             {
-                Guid? player = c switch
+                int player = c switch
                 {
-                    '0' => null,
-                    '1' => p1,
-                    '2' => p2,
+                    '0' => 0,
+                    '1' => 1,
+                    '2' => 2,
                     _ => throw new InvalidBoardException("Cell string contains invalid characters")
                 };
                 var col = i % DIMENSION;
@@ -223,11 +221,11 @@ namespace Server.Game.Quoridor
             return EnumerableUtilities.ToSquareArray(allCells);
         }
 
-        private static Dictionary<Guid, int> ParseWallCounts(string wallCounts, Guid p1, Guid p2)
-            => new Dictionary<Guid, int>
+        private static Dictionary<int, int> ParseWallCounts(string wallCounts)
+            => new Dictionary<int, int>
             {
-                { p1, Convert.ToInt32("" + wallCounts[0], 16) },
-                { p2, Convert.ToInt32("" + wallCounts[1], 16) }
+                { 1, Convert.ToInt32("" + wallCounts[0], 16) },
+                { 2, Convert.ToInt32("" + wallCounts[1], 16) }
             };
     }
 }

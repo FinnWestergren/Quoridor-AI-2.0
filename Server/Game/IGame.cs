@@ -15,6 +15,7 @@ namespace Server.Game
         int GetBoardValue(Guid playerId);
         Guid GetEnemyId(Guid playerId);
         bool IsGameOver();
+        int GetPlayerById(Guid id);
     }
 
 }

@@ -28,9 +28,9 @@ namespace Tests.Agent
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 1);
-            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
+            var p2 = new RandomAgent(game.PlayerTwo);
             
-            WriteResults("DepthOneQuoridor", RunBots(p1,p2,game));
+            WriteResults("DepthOneQuoridor", RunBots(p1, p2, game));
         }
 
         [TestMethod]
@@ -38,7 +38,7 @@ namespace Tests.Agent
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 2);
-            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
+            var p2 = new RandomAgent(game.PlayerTwo);
 
             WriteResults("DepthTwoQuoridor", RunBots(p1, p2, game));
         }
@@ -48,31 +48,13 @@ namespace Tests.Agent
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 3);
-            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
+            var p2 = new RandomAgent(game.PlayerTwo);
 
             WriteResults("DepthThreeQuoridor", RunBots(p1, p2, game));
         }
 
-        [TestMethod]
-        public void BunchaTests()
-        {
-            var threads = new List<Thread>();
-            for (var i = 0; i < 4; i++)
-            {
-                threads.Add(new Thread(TestDepthOneQuoridor));
-                threads.Add(new Thread(TestDepthTwoQuoridor));
-                threads.Add(new Thread(TestDepthThreeQuoridor));
-            }
 
-            foreach (var t in threads)
-            {
-                t.Start();
-            }
-            while (threads.Any(t => t.IsAlive)) ;
-        }
-
-
-        private List<Result> RunBots(MiniMaxAgent p1, MiniMaxAgent p2, IGame game)
+        private List<Result> RunBots(MiniMaxAgent p1, IAgent p2, IGame game)
         {
             var results = new List<Result>();
             var move = 1;
@@ -102,6 +84,12 @@ namespace Tests.Agent
             results.Add(new Result
             {
                 Move = "Avg",
+                Nodes = (int)results.Average(r => r.Nodes),
+                Time = (int)results.Average(r => r.Time)
+            });
+            results.Add(new Result
+            {
+                Move = "Avg Over Threshold",
                 Nodes = (int)results.Average(r => r.Nodes),
                 Time = (int)results.Average(r => r.Time)
             });

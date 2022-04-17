@@ -9,18 +9,18 @@ namespace Server.Game.Quoridor
     {
         public static (bool value, Exception error) ValidatePath(QuoridorBoard board)
         {
-            var p1Clear = IsPathClearForPlayer(board, board.PlayerOne);
-            var p2Clear = IsPathClearForPlayer(board, board.PlayerTwo);
+            var p1Clear = IsPathClearForPlayer(board, 1);
+            var p2Clear = IsPathClearForPlayer(board, 2);
             return (p1Clear && p2Clear, p1Clear && p2Clear ? null : new InvalidBoardException("Path not clear for one or more players"));
         }
 
-        public static int GetDistanceForPlayer(QuoridorBoard board, Guid player)
+        public static int GetDistanceForPlayer(QuoridorBoard board, int player)
         {
-            var yDestination = player == board.PlayerOne ? 0 : QuoridorUtilities.DIMENSION - 1;
+            var yDestination = player == 1 ? 0 : QuoridorUtilities.DIMENSION - 1;
             return BFS(board.PlayerPositions[player], yDestination, board);
         }
 
-        private static bool IsPathClearForPlayer(QuoridorBoard board, Guid player) => GetDistanceForPlayer(board, player) != int.MaxValue;
+        private static bool IsPathClearForPlayer(QuoridorBoard board, int player) => GetDistanceForPlayer(board, player) != int.MaxValue;
 
         // Naive approach just to get things started. I have a feeling I'll need to memoize this.
         private static int BFS(QuoridorCell start, int yDest, QuoridorBoard board)

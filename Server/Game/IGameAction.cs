@@ -8,6 +8,6 @@ namespace Server.Game
     public interface IGameAction
     {
         int SerializedAction { get; }
-        Guid CommittedBy { get; set; }
+        int CommittedBy { get; set; }
     }
 }

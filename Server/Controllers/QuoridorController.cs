@@ -61,7 +61,8 @@ namespace Server.Controllers
         public ActionResult GetPossibleActions(Guid gameId, Guid? playerId = null)
         {
             var game = _presentationService.GetGame(gameId);
-            var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(game.CurrentBoard, playerId ?? game.PlayerOne);
+            var player = playerId == null ? 1 : game.GetPlayerById((Guid) playerId);
+            var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(game.CurrentBoard, player);
             return new JsonResult(new { possibleActions = new { moveActions, wallActions } });
         }
 
@@ -70,7 +71,8 @@ namespace Server.Controllers
         public ActionResult IsWinCondition(Guid gameId, Guid playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var isWin = QuoridorUtilities.IsWinCondition(playerId, game.CurrentBoard);
+            var player = game.GetPlayerById(playerId);
+            var isWin = QuoridorUtilities.IsWinCondition(player, game.CurrentBoard);
             return new JsonResult(isWin);
         }
 

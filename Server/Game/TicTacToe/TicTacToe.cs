@@ -76,7 +76,7 @@ namespace Server.Game.TicTacToe
                 return new List<IGameAction>(); // game over
             }
             var openCells = TicTacToeUtilities.GetOpenCells(CurrentBoard);
-            return openCells.Select(c => new TicTacToeAction(c, playerId));
+            return openCells.Select(c => new TicTacToeAction(c, GetPlayerById(playerId)));
         }
 
         public int GetBoardValue(Guid playerId)
@@ -94,5 +94,12 @@ namespace Server.Game.TicTacToe
         public bool IsFull() => !TicTacToeUtilities.GetOpenCells(CurrentBoard).Any();
         public bool IsTie() => !TicTacToeUtilities.GetOpenCells(CurrentBoard).Any() && !(TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard));
         public bool IsGameOver() => IsFull() || TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard);
+
+        public int GetPlayerById(Guid id)
+        {
+            if (id == PlayerOne) return 1;
+            if (id == PlayerTwo) return 2;
+            throw new Exception("Invalid Player ID");
+        }
     }
 }

@@ -34,10 +34,7 @@ namespace Tests.Game
 
         private QuoridorBoard Init(string boardStr)
         {
-
-            Guid p1 = Guid.NewGuid();
-            Guid p2 = Guid.NewGuid();
-            return QuoridorUtilities.ParseBoard(boardStr, p1, p2);
+            return QuoridorUtilities.ParseBoard(boardStr);
         }
 
         private QuoridorWallAction CreateAction(int x, int y, WallOrientation o) => new QuoridorWallAction
