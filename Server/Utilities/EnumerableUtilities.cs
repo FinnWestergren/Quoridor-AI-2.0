@@ -10,7 +10,7 @@ namespace Server.Utilities
 
         public static T[,] ToSquareArray<T>(IEnumerable<T> input)
         {
-            int sideLength = (int)Math.Sqrt(input.Count());
+            int sideLength = GetSquareRoot(input.Count());
             T[,] output = new T[sideLength, sideLength];
             for (var i = 0; i < input.Count(); i++)
             {
@@ -23,7 +23,7 @@ namespace Server.Utilities
 
         public static IEnumerable<T> From2DArray<T>(T[,] array)
         {
-            var sidelength = (int) Math.Sqrt(array.Length);
+            var sidelength = GetSquareRoot(array.Length);
             for (int row = 0; row < sidelength; row++)
             {
                 for (int col = 0; col < sidelength; col++)
@@ -36,7 +36,7 @@ namespace Server.Utilities
 
         public static IEnumerable<IEnumerable<T>> ToSquareEnumerable<T>(T[,] input)
         {
-            int sideLength = (int) Math.Sqrt(input.Length);
+            int sideLength = GetSquareRoot(input.Length);
             IEnumerable<T> getRow(int col)
             {
                 for (int i = 0; i < sideLength; i++)
@@ -48,6 +48,20 @@ namespace Server.Utilities
             for (int i = 0; i < sideLength; i++)
             {
                 yield return getRow(i);
+            }
+        }
+
+        private static int GetSquareRoot(int input)
+        {
+            switch (input) {
+                case 81:
+                    return 9;
+                case 64:
+                    return 8;
+                case 9:
+                    return 3;
+                default:
+                    return -1;
             }
         }
     }
