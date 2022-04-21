@@ -18,9 +18,9 @@ namespace Tests.Agent
     {
         protected class Result
         {
-            public string Move { get; set; }
             public int Nodes { get; set; }
             public long Time { get; set; }
+            public float TimePerNode => (float)Time / Nodes;
         }
 
         [TestMethod]
@@ -28,9 +28,14 @@ namespace Tests.Agent
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 1);
-            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
-            
-            WriteResults("DepthOneQuoridor", RunBots(p1,p2,game));
+            var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
+            var result = new Result
+            {
+                Nodes = p1.NodeCount,
+                Time = time
+            };
+
+            WriteResults("DepthOneQuoridor", result);
         }
 
         [TestMethod]
@@ -38,77 +43,17 @@ namespace Tests.Agent
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 2);
-            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
+            var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
+            var result = new Result
+            {
+                Nodes = p1.NodeCount,
+                Time = time
+            };
 
-            WriteResults("DepthTwoQuoridor", RunBots(p1, p2, game));
+            WriteResults("DepthTwoQuoridor", result);
         }
 
-        [TestMethod]
-        public void TestDepthThreeQuoridor()
-        {
-            var game = new Quoridor();
-            var p1 = new MiniMaxAgent(game.PlayerOne, 3);
-            var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
-
-            WriteResults("DepthThreeQuoridor", RunBots(p1, p2, game));
-        }
-
-        [TestMethod]
-        public void BunchaTests()
-        {
-            var threads = new List<Thread>();
-            for (var i = 0; i < 4; i++)
-            {
-                threads.Add(new Thread(TestDepthOneQuoridor));
-                threads.Add(new Thread(TestDepthTwoQuoridor));
-                threads.Add(new Thread(TestDepthThreeQuoridor));
-            }
-
-            foreach (var t in threads)
-            {
-                t.Start();
-            }
-            while (threads.Any(t => t.IsAlive)) ;
-        }
-
-
-        private List<Result> RunBots(MiniMaxAgent p1, MiniMaxAgent p2, IGame game)
-        {
-            var results = new List<Result>();
-            var move = 1;
-            while (!game.IsGameOver())
-            {
-                var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
-                results.Add(new Result
-                {
-                    Move = move.ToString(),
-                    Nodes = p1.NodeCount,
-                    Time = time
-                });
-                game.CommitAction(r1.SerializedAction, p1.PlayerId);
-                move++;
-                if (!game.IsGameOver())
-                {
-                    var r2 = p2.GetNextAction(game);
-                    game.CommitAction(r2.SerializedAction, p2.PlayerId);
-                }
-            }
-            results.Add(new Result
-            {
-                Move = "Total",
-                Nodes = results.Sum(r => r.Nodes),
-                Time = results.Sum(r => r.Time)
-            });
-            results.Add(new Result
-            {
-                Move = "Avg",
-                Nodes = (int)results.Average(r => r.Nodes),
-                Time = (int)results.Average(r => r.Time)
-            });
-            return results;
-        }
-
-        private void WriteResults(string testType, List<Result> results)
+        private void WriteResults(string testType, Result result)
         {
             var path = $@"{getRootPath()}\TestOutput\{testType}\";
             Directory.CreateDirectory(path);
@@ -119,11 +64,8 @@ namespace Tests.Agent
             {
                 csv.WriteHeader<Result>();
                 csv.NextRecord();
-                foreach (var record in results)
-                {
-                    csv.WriteRecord(record);
-                    csv.NextRecord();
-                }
+                csv.WriteRecord(result);
+                csv.NextRecord();
             }
         }
 
