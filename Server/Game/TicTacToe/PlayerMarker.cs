@@ -2,8 +2,8 @@
 {
     public enum PlayerMarker
     {
-        X = 0,
-        O = 1,
-        None = 2
+        None = 0,
+        X = 1,
+        O = 2,
     }
 }

@@ -7,13 +7,12 @@ function getState() {
 
 export const getBoard = () => getState()?.currentBoard
 const getHumanPlayerCharacter = () => getHumanPlayer() == getPlayerOne() ? 'X' : 'O'
-const getHumanPlayerInt = () => getHumanPlayer() == getPlayerOne() ? 0 : 1
 
 export const optimisticallyCommitAction = async (serializedCell, board) => {
-    if (board[serializedCell].occupiedBy != 2) return
+    if (board[serializedCell].occupiedBy != 0) return
     const state = getState()
     const newBoard = [...board]
-    const newCell = {...board[serializedCell], printCell: getHumanPlayerCharacter(), occupiedBy: getHumanPlayerInt()}
+    const newCell = {...board[serializedCell], printCell: getHumanPlayerCharacter(), occupiedBy: getHumanPlayer()}
     newBoard[serializedCell] = newCell
     updateState({...state, currentBoard: newBoard})
     const success = await CommitAction(serializedCell);

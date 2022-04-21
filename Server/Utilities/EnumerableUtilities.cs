@@ -26,9 +26,9 @@ namespace Server.Utilities
         public static IEnumerable<T> From2DArray<T>(T[,] array)
         {
             var sidelength = (int) Math.Sqrt(array.Length);
-            for (int row = 0; row < sidelength; row++)
+            for (int col = 0; col < sidelength; col++) 
             {
-                for (int col = 0; col < sidelength; col++)
+                for (int row = 0; row < sidelength; row++)
                 {
                     yield return array[col, row];
                 }

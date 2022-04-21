@@ -58,7 +58,7 @@ const fillTile = ({row, col, occupiedBy}) => {
     const tileBoundaries = boundaries(row,col);
     window.tf.push();
     noStroke();
-    occupiedBy == 2 && fill(getHumanColor());
+    occupiedBy == 0 && fill(getHumanColor());
     rect(tileBoundaries.leftX, tileBoundaries.upperY, spacing(), spacing());
     window.tf.pop();
 }
@@ -68,6 +68,7 @@ export const setup = () => {
         const board = getBoard();
         const mousedTile = mousedOverTile(board);
         if (mousedTile) {
+            console.log(mousedTile);
             const event = new CustomEvent("human_action", {detail: {action: async () => await optimisticallyCommitAction(mousedTile.serializedCell, board)}});
             window.dispatchEvent(event)
         }
