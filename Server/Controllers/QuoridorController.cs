@@ -44,13 +44,13 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/GetMinimaxMove")]
-        public ActionResult GetMinimaxMove(Guid gameId, Guid playerId)
+        public ActionResult GetMinimaxMove(Guid gameId, PLAYER_ID player)
         {
             var game = _presentationService.GetGame(gameId);
-            var (move, nodes, time) = GetMinimaxMove(playerId, game);
+            var (move, nodes, time) = GetMinimaxMove(player, game);
             if (move != null)
             {
-                game.CommitAction(move.SerializedAction, playerId);
+                game.CommitAction(move.SerializedAction, player);
                 _commandService.SaveGame(game);
             }
             return new JsonResult(QuoridorGameViewModel.FromGame(game));
@@ -58,20 +58,18 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/GetPossibleActions")]
-        public ActionResult GetPossibleActions(Guid gameId, Guid? playerId = null)
+        public ActionResult GetPossibleActions(Guid gameId, PLAYER_ID player)
         {
             var game = _presentationService.GetGame(gameId);
-            var player = playerId == null ? 1 : game.GetPlayerById((Guid) playerId);
             var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(game.CurrentBoard, player);
             return new JsonResult(new { possibleActions = new { moveActions, wallActions } });
         }
 
         [HttpGet]
         [Route("[controller]/IsWinCondition")]
-        public ActionResult IsWinCondition(Guid gameId, Guid playerId)
+        public ActionResult IsWinCondition(Guid gameId, PLAYER_ID player)
         {
             var game = _presentationService.GetGame(gameId);
-            var player = game.GetPlayerById(playerId);
             var isWin = QuoridorUtilities.IsWinCondition(player, game.CurrentBoard);
             return new JsonResult(isWin);
         }
@@ -93,9 +91,9 @@ namespace Server.Controllers
             return new JsonResult(BoardPrinter.PrintHumanReadableBoard(game.CurrentBoard));
         }
 
-        private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, IGame game, bool ABPrune = true)
+        private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(PLAYER_ID player, IGame game, bool ABPrune = true)
         {
-            var agent = new MiniMaxAgent(playerId, isABPruningEnabled: ABPrune, maxSearchDepth: 2);
+            var agent = new MiniMaxAgent(player, isABPruningEnabled: ABPrune, maxSearchDepth: 2);
             var (time, result) = ActionTimer.TimeFunction(() => agent.GetNextAction(game));
             return (result, agent.NodeCount, time);
         }

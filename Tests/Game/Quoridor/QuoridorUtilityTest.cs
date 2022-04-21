@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Server.Game;
 using Server.Game.Quoridor;
 using System;
 using System.Collections.Generic;
@@ -56,19 +57,17 @@ namespace Tests.Game
         public void ParsesSimpleBoard()
         {
             var board = QuoridorUtilities.ParseBoard(_simpleTestBoard);
-            Assert.AreEqual(10, board.PlayerWallCounts[1]);
-            Assert.AreEqual(9, board.PlayerWallCounts[2]);
+            Assert.AreEqual(10, board.PlayerWallCounts[PLAYER_ID.PLAYER_ONE]);
+            Assert.AreEqual(9, board.PlayerWallCounts[PLAYER_ID.PLAYER_TWO]);
         }
 
         [TestMethod]
         public void ParsesComplexBoard()
         {
-            Guid p1 = Guid.NewGuid();
-            Guid p2 = Guid.NewGuid();
             var board = QuoridorUtilities.ParseBoard(_complexTestBoard);
-            Assert.AreEqual(board.PlayerWallCounts[1], 8);
-            Assert.AreEqual(board.PlayerWallCounts[2], 7);
-            var distP2 = PathValidator.GetDistanceForPlayer(board, 2);
+            Assert.AreEqual(board.PlayerWallCounts[PLAYER_ID.PLAYER_ONE], 8);
+            Assert.AreEqual(board.PlayerWallCounts[PLAYER_ID.PLAYER_TWO], 7);
+            var distP2 = PathValidator.GetDistanceForPlayer(board, PLAYER_ID.PLAYER_TWO);
             Assert.AreEqual(10, distP2);
         }
 

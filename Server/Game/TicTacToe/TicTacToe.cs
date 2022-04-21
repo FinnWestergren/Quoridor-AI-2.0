@@ -8,33 +8,29 @@ namespace Server.Game.TicTacToe
     public class TicTacToe : IGame
     {
         private readonly Stack<TicTacToeCell[,]> _history;
-        public Guid PlayerOne { get; set; }
-        public Guid PlayerTwo { get; set; }
         public Guid GameId { get; set; }
-        private Guid? _whoWentLast = null;
+        public PLAYER_ID WhosTurn { get; set; }
 
-        public TicTacToe(string boardString = null)
+
+        public TicTacToe(string boardString = null, PLAYER_ID? whosTurn = null)
         {
             _history = new Stack<TicTacToeCell[,]>();
+            WhosTurn = whosTurn ?? PLAYER_ID.PLAYER_ONE;
             var board = boardString == null ? TicTacToeUtilities.EmptyBoard : TicTacToeUtilities.ParseBoard(boardString);
             _history.Push(board);
-            PlayerOne = Guid.NewGuid();
-            PlayerTwo = Guid.NewGuid();
             GameId = Guid.NewGuid();
         }
 
-        public TicTacToe(string boardString, Guid playerOne, Guid playerTwo, Guid gameId)
+        public TicTacToe(string boardString, Guid gameId)
         {
             _history = new Stack<TicTacToeCell[,]>();
             _history.Push(TicTacToeUtilities.ParseBoard(boardString));
-            PlayerOne = playerOne;
-            PlayerTwo = playerTwo;
             GameId = gameId;
         }
 
-        public void CommitAction(int serializedAction, Guid playerId, bool skipValidation = false)
+        public void CommitAction(int serializedAction, PLAYER_ID playerId, bool skipValidation = false)
         {
-            if(_whoWentLast == playerId)
+            if(WhosTurn != playerId)
             {
                 throw new Exception("You can't go twice in a row!");
             }
@@ -45,41 +41,39 @@ namespace Server.Game.TicTacToe
             var playerMarker = GetPlayerMarker(playerId);
             var next = TicTacToeUtilities.CommitActionToBoard(playerMarker, serializedAction, CurrentBoard);
             _history.Push(next);
-            _whoWentLast = playerId;
+            ToggleWhosTurn();
         }
-
-        public Guid GetEnemyId(Guid playerId) => playerId == PlayerOne ? PlayerTwo : PlayerOne;
 
         public void UndoAction()
         {
             _history.Pop();
-            if (_whoWentLast != null) _whoWentLast = GetEnemyId((Guid) _whoWentLast);
+            ToggleWhosTurn();
         }
 
         public void Print() => TicTacToeUtilities.PrintBoard(CurrentBoard);
 
         public TicTacToeCell[,] CurrentBoard => _history.Peek();
 
-        public PlayerMarker GetPlayerMarker(Guid playerId)
+        public PlayerMarker GetPlayerMarker(PLAYER_ID player)
         {
-            if (playerId == PlayerOne) return PlayerMarker.X;
-            if (playerId == PlayerTwo) return PlayerMarker.O;
-            throw new Exception($"player ID {playerId} not registered");
+            if (player == PLAYER_ID.PLAYER_ONE) return PlayerMarker.X;
+            if (player == PLAYER_ID.PLAYER_TWO) return PlayerMarker.O;
+            throw new Exception($"player value {player} not valid");
         }
 
         public string GameType() => "TicTacToe";
 
-        public IEnumerable<IGameAction> GetPossibleMoves(Guid playerId)
+        public IEnumerable<IGameAction> GetPossibleMoves(PLAYER_ID playerId)
         {
             if (GetBoardValue(playerId) != 0)
             {
                 return new List<IGameAction>(); // game over
             }
             var openCells = TicTacToeUtilities.GetOpenCells(CurrentBoard);
-            return openCells.Select(c => new TicTacToeAction(c, GetPlayerById(playerId)));
+            return openCells.Select(c => new TicTacToeAction(c, playerId));
         }
 
-        public int GetBoardValue(Guid playerId)
+        public int GetBoardValue(PLAYER_ID playerId)
         {
             var playerMarker = GetPlayerMarker(playerId);
             var enemyMarker = playerMarker == PlayerMarker.X ? PlayerMarker.O : PlayerMarker.X;
@@ -94,12 +88,9 @@ namespace Server.Game.TicTacToe
         public bool IsFull() => !TicTacToeUtilities.GetOpenCells(CurrentBoard).Any();
         public bool IsTie() => !TicTacToeUtilities.GetOpenCells(CurrentBoard).Any() && !(TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard));
         public bool IsGameOver() => IsFull() || TicTacToeUtilities.IsWinCondition(PlayerMarker.X, CurrentBoard) || TicTacToeUtilities.IsWinCondition(PlayerMarker.O, CurrentBoard);
-
-        public int GetPlayerById(Guid id)
+        private void ToggleWhosTurn()
         {
-            if (id == PlayerOne) return 1;
-            if (id == PlayerTwo) return 2;
-            throw new Exception("Invalid Player ID");
+            WhosTurn = WhosTurn == PLAYER_ID.PLAYER_ONE ? PLAYER_ID.PLAYER_TWO : PLAYER_ID.PLAYER_ONE;
         }
     }
 }

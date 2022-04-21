@@ -5,17 +5,12 @@ namespace Server.Game
 {
     public interface IGame
     {
-        Guid PlayerOne { get; }
-        Guid PlayerTwo { get; }
         Guid GameId { get; set; }
-        void CommitAction(int serializedAction, Guid playerId, bool skipValidation = false);
+        void CommitAction(int serializedAction, PLAYER_ID player, bool skipValidation = false);
         void UndoAction();
         string GameType();
-        IEnumerable<IGameAction> GetPossibleMoves(Guid playerId); 
-        int GetBoardValue(Guid playerId);
-        Guid GetEnemyId(Guid playerId);
+        IEnumerable<IGameAction> GetPossibleMoves(PLAYER_ID player); 
+        int GetBoardValue(PLAYER_ID player);
         bool IsGameOver();
-        int GetPlayerById(Guid id);
     }
-
 }

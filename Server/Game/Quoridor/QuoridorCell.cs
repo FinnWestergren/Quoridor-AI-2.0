@@ -10,10 +10,10 @@ namespace Server.Game.Quoridor
         public int Row { get; set; }
         [JsonProperty]
         public int Col { get; set; }
-        public int OccupiedBy { get; set; } // 0, 1, 2
+        public PLAYER_ID OccupiedBy { get; set; } // 0, 1, 2
         public bool IsOccupied => OccupiedBy != 0;
         public int SerializedCell(int dimension) => Col + Row * dimension;
-        public QuoridorCell(int row, int col, int player = 0)
+        public QuoridorCell(int row, int col, PLAYER_ID player = PLAYER_ID.NONE)
         {
             Row = row;
             Col = col;

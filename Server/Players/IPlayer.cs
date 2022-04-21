@@ -8,6 +8,6 @@ namespace Server.Players
 {
     public interface IPlayer
     {
-        public Guid PlayerId { get; set; }
+        public PLAYER_ID PlayerId { get; set; }
     }
 }

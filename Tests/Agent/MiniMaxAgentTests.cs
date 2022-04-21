@@ -12,8 +12,7 @@ namespace Tests.Agent
     public class MiniMaxAgentTests
     {
         private IGame _game;
-        private Guid _playerId = Guid.NewGuid();
-        private int _playerInt = 1;
+        private PLAYER_ID _playerVal = PLAYER_ID.PLAYER_ONE;
         private const int _winningAction = 69; // nice
         private const int _losingAction = 70; // not nice :(
         private IAgent _agent;
@@ -23,11 +22,11 @@ namespace Tests.Agent
         {
             var winningMockAction = new Mock<IGameAction>();
             winningMockAction.Setup(a => a.SerializedAction).Returns(_winningAction);
-            winningMockAction.Setup(a => a.CommittedBy).Returns(_playerInt);
+            winningMockAction.Setup(a => a.CommittedBy).Returns(_playerVal);
 
             var losingMockAction = new Mock<IGameAction>();
             losingMockAction.Setup(a => a.SerializedAction).Returns(_losingAction);
-            losingMockAction.Setup(a => a.CommittedBy).Returns(_playerInt);
+            losingMockAction.Setup(a => a.CommittedBy).Returns(_playerVal);
 
             int ActionValue() => _selectedAction switch
             {
@@ -44,16 +43,15 @@ namespace Tests.Agent
             };
 
             var initialGame = new Mock<IGame>();
-            initialGame.Setup(g => g.PlayerOne).Returns(_playerId);
-            initialGame.Setup(g => g.GetBoardValue(_playerId)).Returns(ActionValue);
-            initialGame.Setup(g => g.GetPossibleMoves(_playerId)).Returns(GetNextActions);
+            initialGame.Setup(g => g.GetBoardValue(_playerVal)).Returns(ActionValue);
+            initialGame.Setup(g => g.GetPossibleMoves(_playerVal)).Returns(GetNextActions);
 
             initialGame.Setup(g => g.UndoAction()).Callback(() => _game = initialGame.Object);
-            initialGame.Setup(g => g.CommitAction(_winningAction, _playerId, false)).Callback(() => _selectedAction = _winningAction);
-            initialGame.Setup(g => g.CommitAction(_losingAction, _playerId, false)).Callback(() => _selectedAction = _losingAction);
+            initialGame.Setup(g => g.CommitAction(_winningAction, _playerVal, false)).Callback(() => _selectedAction = _winningAction);
+            initialGame.Setup(g => g.CommitAction(_losingAction, _playerVal, false)).Callback(() => _selectedAction = _losingAction);
 
             _game = initialGame.Object;
-            _agent = new MiniMaxAgent(_playerId);
+            _agent = new MiniMaxAgent(_playerVal);
         }
 
         [TestMethod]

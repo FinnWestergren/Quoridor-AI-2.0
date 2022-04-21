@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace Server.Game
 {
-    public interface IGameAction
+    public enum PLAYER_ID
     {
-        int SerializedAction { get; }
-        PLAYER_ID CommittedBy { get; set; }
+        NONE = 0,
+        PLAYER_ONE = 1,
+        PLAYER_TWO = 2
     }
 }

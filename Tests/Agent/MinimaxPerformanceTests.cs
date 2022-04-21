@@ -5,11 +5,8 @@ using Server.Game.Quoridor;
 using Server.Players.Agent;
 using Server.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Threading;
 
 namespace Tests.Agent
 {
@@ -27,7 +24,7 @@ namespace Tests.Agent
         public void TestDepthOneQuoridor()
         {
             var game = new Quoridor();
-            var p1 = new MiniMaxAgent(game.PlayerOne, 1);
+            var p1 = new MiniMaxAgent(PLAYER_ID.PLAYER_ONE, 1);
             var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
             var result = new Result
             {
@@ -42,7 +39,7 @@ namespace Tests.Agent
         public void TestDepthTwoQuoridor()
         {
             var game = new Quoridor();
-            var p1 = new MiniMaxAgent(game.PlayerOne, 2);
+            var p1 = new MiniMaxAgent(PLAYER_ID.PLAYER_ONE, 2);
             var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
             var result = new Result
             {

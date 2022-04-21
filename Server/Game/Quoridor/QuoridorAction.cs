@@ -22,7 +22,7 @@ namespace Server.Game.Quoridor
 
         [JsonProperty]
         public int SerializedAction => Row + Col * QuoridorUtilities.DIMENSION + (int) Orientation * WALL_SERIALIZATION_FACTOR;
-        public int CommittedBy { get; set; }
+        public PLAYER_ID CommittedBy { get; set; }
 
     }
     [JsonObject(MemberSerialization.OptIn)]
@@ -32,7 +32,7 @@ namespace Server.Game.Quoridor
         public QuoridorCell Cell { get; set; }
         [JsonProperty]
         public int SerializedAction => Cell.Row + Cell.Col * QuoridorUtilities.DIMENSION;
-        public int CommittedBy { get; set; }
+        public PLAYER_ID CommittedBy { get; set; }
     }
 
 }

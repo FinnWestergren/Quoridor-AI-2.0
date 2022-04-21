@@ -10,8 +10,8 @@ namespace Server.Game.Quoridor
         public bool IsValidated { get; set; } = false;
         public WallOrientation[,] Walls { get; set; }
         public QuoridorCell[,] Cells { get; set; }
-        public Dictionary<int, int> PlayerWallCounts { get; set; }
-        public Dictionary<int, QuoridorCell> PlayerPositions
+        public Dictionary<PLAYER_ID, int> PlayerWallCounts { get; set; }
+        public Dictionary<PLAYER_ID, QuoridorCell> PlayerPositions
         {
             get
             {
@@ -27,7 +27,7 @@ namespace Server.Game.Quoridor
             }
         }
 
-        private Dictionary<int, QuoridorCell> _playerPositions = null;
+        private Dictionary<PLAYER_ID, QuoridorCell> _playerPositions = null;
 
         public IEnumerable<QuoridorCell> GetAvailableDestinations(QuoridorCell fromCell, bool concernedAboutOccupied = true)
         {
@@ -123,7 +123,7 @@ namespace Server.Game.Quoridor
                 }
             }
         }
-        public void SetPlayerPosition(int committedBy, QuoridorCell cell)
+        public void SetPlayerPosition(PLAYER_ID committedBy, QuoridorCell cell)
         {
             var oldCell = PlayerPositions[committedBy];
             Cells[oldCell.Col, oldCell.Row].OccupiedBy = 0;
@@ -133,7 +133,7 @@ namespace Server.Game.Quoridor
 
         private void EvaluatePlayerPositions()
         {
-            _playerPositions = new Dictionary<int, QuoridorCell>();
+            _playerPositions = new Dictionary<PLAYER_ID, QuoridorCell>();
             foreach (var cell in Cells)
             {
                 if (cell.IsOccupied)
@@ -161,10 +161,10 @@ namespace Server.Game.Quoridor
                 if (!selfCellList[i].Equals(otherCellList[i])) return false;
             }
 
-            if (!PlayerPositions[1].Equals(other.PlayerPositions[1])) return false;
-            if (!PlayerPositions[2].Equals(other.PlayerPositions[2])) return false;
-            if (!PlayerWallCounts[1].Equals(other.PlayerWallCounts[1])) return false;
-            if (!PlayerWallCounts[2].Equals(other.PlayerWallCounts[2])) return false;
+            if (!PlayerPositions[PLAYER_ID.PLAYER_ONE].Equals(other.PlayerPositions[PLAYER_ID.PLAYER_ONE])) return false;
+            if (!PlayerPositions[PLAYER_ID.PLAYER_TWO].Equals(other.PlayerPositions[PLAYER_ID.PLAYER_TWO])) return false;
+            if (!PlayerWallCounts[PLAYER_ID.PLAYER_ONE].Equals(other.PlayerWallCounts[PLAYER_ID.PLAYER_ONE])) return false;
+            if (!PlayerWallCounts[PLAYER_ID.PLAYER_TWO].Equals(other.PlayerWallCounts[PLAYER_ID.PLAYER_TWO])) return false;
 
             return true;
         }
@@ -178,7 +178,7 @@ namespace Server.Game.Quoridor
             {
                 Cells = EnumerableUtilities.ToSquareArray(newCells),
                 Walls = EnumerableUtilities.ToSquareArray(newWalls),
-                PlayerWallCounts = new Dictionary<int, int>(PlayerWallCounts)
+                PlayerWallCounts = new Dictionary<PLAYER_ID, int>(PlayerWallCounts)
             };
         }
     }

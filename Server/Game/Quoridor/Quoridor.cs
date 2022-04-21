@@ -9,25 +9,21 @@ namespace Server.Game.Quoridor
         private readonly Stack<QuoridorBoard> _history;
         public Guid GameId { get; set; }
         public QuoridorBoard CurrentBoard => _history.Peek();
-        public Guid PlayerOne { get; set; }
-        public Guid PlayerTwo { get; set; }
-        public Guid WhosTurn { get; set; }
+        public PLAYER_ID WhosTurn { get; set; }
 
-        public Quoridor(string boardString = null, Guid? whosTurn = null)
+        public Quoridor(string boardString = null, PLAYER_ID? whosTurn = null)
         {
             _history = new Stack<QuoridorBoard>();
-            PlayerOne = Guid.NewGuid();
-            PlayerTwo = Guid.NewGuid();
-            WhosTurn = whosTurn ?? PlayerOne;
+            WhosTurn = whosTurn ?? PLAYER_ID.PLAYER_ONE;
             boardString ??= QuoridorUtilities.Empty2PlayerBoardString;
             var board = QuoridorUtilities.ParseBoard(boardString);
             _history.Push(board);
             GameId = Guid.NewGuid();
         }
 
-        public void CommitAction(int serializedAction, Guid playerId, bool skipValidation = false)
+        public void CommitAction(int serializedAction, PLAYER_ID player, bool skipValidation = false)
         {
-            if (WhosTurn != playerId)
+            if (WhosTurn != player)
             {
                 throw new Exception("Not Your Turn!");
             }
@@ -35,27 +31,26 @@ namespace Server.Game.Quoridor
             {
                 throw new Exception("Game's already over.");
             }
-            _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, GetPlayerById(playerId), skipValidation));
-            WhosTurn = GetEnemyId(playerId);
+            _history.Push(QuoridorUtilities.TryCommitActionToBoard(serializedAction, CurrentBoard, player, skipValidation));
+            ToggleWhosTurn();
         }
 
         public void UndoAction()
         {
             _history.Pop();
-            WhosTurn = GetEnemyId(WhosTurn);
+            ToggleWhosTurn();
         }
         public string GameType() => "Quoridor";
 
-        public IEnumerable<IGameAction> GetPossibleMoves(Guid playerId)
+        public IEnumerable<IGameAction> GetPossibleMoves(PLAYER_ID player)
         {
-            var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(CurrentBoard, GetPlayerById(playerId));
+            var (moveActions, wallActions) = QuoridorUtilities.GetPossibleMoves(CurrentBoard, player);
             return moveActions.Union<IGameAction>(wallActions);
         }
 
-        public int GetBoardValue(Guid playerId)
+        public int GetBoardValue(PLAYER_ID player)
         {
-            var player = GetPlayerById(playerId);
-            var enemy = GetEnemyById(playerId);
+            var enemy = player == PLAYER_ID.PLAYER_ONE ? PLAYER_ID.PLAYER_TWO : PLAYER_ID.PLAYER_ONE;
             var enemyDist = PathValidator.GetDistanceForPlayer(CurrentBoard, enemy);
             var playerDist = PathValidator.GetDistanceForPlayer(CurrentBoard, player);
             if (enemyDist == 0) return Int32.MinValue + 1; // cant actually be min or max cuz that fux w minimax lol
@@ -63,26 +58,11 @@ namespace Server.Game.Quoridor
             return enemyDist - playerDist;
         }
 
-        public Guid GetEnemyId(Guid playerId)
-        {
-            if (playerId == PlayerOne) return PlayerTwo;
-            if (playerId == PlayerTwo) return PlayerOne;
-            throw new Exception($"Invalid Player Id {playerId}");
-        }
+        public bool IsGameOver() => QuoridorUtilities.IsWinCondition(PLAYER_ID.PLAYER_ONE, CurrentBoard) || QuoridorUtilities.IsWinCondition(PLAYER_ID.PLAYER_TWO, CurrentBoard);
 
-        public bool IsGameOver() => QuoridorUtilities.IsWinCondition(1, CurrentBoard) || QuoridorUtilities.IsWinCondition(2, CurrentBoard);
-
-        public int GetPlayerById(Guid id)
+        private void ToggleWhosTurn()
         {
-            if (id == PlayerOne) return 1;
-            if (id == PlayerTwo) return 2;
-            throw new Exception("Invalid Player ID");
-        }
-        private int GetEnemyById(Guid id)
-        {
-            if (id == PlayerOne) return 2;
-            if (id == PlayerTwo) return 1;
-            throw new Exception("Invalid Player ID");
+            WhosTurn = WhosTurn == PLAYER_ID.PLAYER_ONE ? PLAYER_ID.PLAYER_TWO : PLAYER_ID.PLAYER_ONE;
         }
     }
 }

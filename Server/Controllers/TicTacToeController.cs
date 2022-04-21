@@ -43,7 +43,7 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/GetMinimaxMove")]
-        public ActionResult GetMinimaxMove(Guid gameId, Guid playerId)
+        public ActionResult GetMinimaxMove(Guid gameId, PLAYER_ID playerId)
         {
             var game = _presentationService.GetGame(gameId);
             var move = GetMinimaxMove(playerId, game).action;
@@ -57,19 +57,19 @@ namespace Server.Controllers
 
         [HttpGet]
         [Route("[controller]/GetPossibleActions")]
-        public ActionResult GetPossibleActions(Guid gameId, Guid? playerId = null)
+        public ActionResult GetPossibleActions(Guid gameId, PLAYER_ID playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var moveSet = game.GetPossibleMoves(playerId ?? game.PlayerOne);
+            var moveSet = game.GetPossibleMoves(playerId);
             return new JsonResult(moveSet);
         }
 
         [HttpGet]
         [Route("[controller]/IsWinCondition")]
-        public ActionResult IsWinCondition(Guid gameId, Guid playerId)
+        public ActionResult IsWinCondition(Guid gameId, PLAYER_ID playerId)
         {
             var game = _presentationService.GetGame(gameId);
-            var playerMarker = playerId == game.PlayerOne ? PlayerMarker.X : PlayerMarker.O;
+            var playerMarker = playerId == PLAYER_ID.PLAYER_ONE ? PlayerMarker.X : PlayerMarker.O;
             var isWin = TicTacToeUtilities.IsWinCondition(playerMarker, game.CurrentBoard);
             return new JsonResult(isWin);
         }
@@ -91,7 +91,7 @@ namespace Server.Controllers
             return new JsonResult(TicTacToeUtilities.PrintHumanReadableBoard(game.CurrentBoard));
         }
 
-        private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(Guid playerId, IGame game, bool ABPrune = true)
+        private (IGameAction action, int nodesSearched, long time) GetMinimaxMove(PLAYER_ID playerId, IGame game, bool ABPrune = true)
         {
             var agent = new MiniMaxAgent(playerId, isABPruningEnabled: ABPrune);
             var (time, result) = ActionTimer.TimeFunction(() => agent.GetNextAction(game));

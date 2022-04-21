@@ -8,11 +8,11 @@ namespace Server.Players.Agent
 {
     public class RandomAgent : IAgent
     {
-        public RandomAgent(Guid pId)
+        public RandomAgent(PLAYER_ID pId)
         {
             PlayerId = pId;
         }
-        public Guid PlayerId { get; set; }
+        public PLAYER_ID PlayerId { get; set; }
 
         public IGameAction GetNextAction(IGame game)
         {

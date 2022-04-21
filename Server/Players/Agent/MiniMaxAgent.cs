@@ -9,12 +9,12 @@ namespace Server.Players.Agent
         private const int DEFAULT_SEARCH_DEPTH = 8;
         private const int DEFAULT_BETA = Int32.MaxValue;
         private const int DEFAULT_ALPHA = Int32.MinValue;
-        public Guid PlayerId { get; set; }
+        public PLAYER_ID PlayerId { get; set; }
         private readonly int _maxSearchDepth;
         private readonly bool _isABPruningEnabled;
 
         public int NodeCount { get; set; } = 0;
-        public MiniMaxAgent(Guid playerId, int maxSearchDepth = DEFAULT_SEARCH_DEPTH, bool isABPruningEnabled = true)
+        public MiniMaxAgent(PLAYER_ID playerId, int maxSearchDepth = DEFAULT_SEARCH_DEPTH, bool isABPruningEnabled = true)
         {
             PlayerId = playerId;
             _maxSearchDepth = maxSearchDepth;
@@ -65,7 +65,7 @@ namespace Server.Players.Agent
         private int MinMove(IGame game, int depth, int alpha = DEFAULT_ALPHA)
         {
             NodeCount++;
-            var enemyId = game.GetEnemyId(PlayerId);
+            var enemyId = PlayerId == PLAYER_ID.PLAYER_ONE ? PLAYER_ID.PLAYER_TWO : PLAYER_ID.PLAYER_ONE;
             var possibleMoves = game.GetPossibleMoves(enemyId);
             if (!possibleMoves.Any() || depth > _maxSearchDepth || game.IsGameOver())
             {
