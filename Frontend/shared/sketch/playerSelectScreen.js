@@ -1,12 +1,18 @@
 import { p1Color, p2Color } from "../utilities/colors.js"
 import { getHumanPlayer, getPlayerOne, getPlayerTwo, selectPlayer } from "../state/sharedState.js";
-import { drawButton, isButtonMousedOver } from "../utilities/buttons.js";
+import { drawButton, isButtonMousedOver, removeButton } from "../utilities/buttons.js";
+import { FetchPossibleActions, GetMinimaxAction } from "../api/sharedApi.js";
 
 const p1Button = {
     boundaries: { x: -40, y: 0, w: 50, h: 50 },
     content: "P1",
     id: "p1_button",
-    onClick: () => selectPlayer(1),
+    onClick: () => {
+        selectPlayer(1);
+        FetchPossibleActions();
+        removeButton("p1_button");
+        removeButton("p2_button");
+    }
 }
 
 const p2Button = {
@@ -14,7 +20,10 @@ const p2Button = {
     content: "P2",
     id: "p2_button",
     onClick: () => {
-        selectPlayer(2)
+        selectPlayer(2);
+        GetMinimaxAction().then(FetchPossibleActions);
+        removeButton("p1_button");
+        removeButton("p2_button");
     }
 }
 

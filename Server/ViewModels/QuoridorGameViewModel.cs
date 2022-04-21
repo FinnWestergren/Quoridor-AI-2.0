@@ -31,12 +31,14 @@ namespace Server.ViewModels
             return new QuoridorGameViewModel
             {
                 Walls = EnumerableUtilities.ToSquareEnumerable(game.CurrentBoard.Walls),
-                PlayerWallCounts = JsonConvert.SerializeObject(game.CurrentBoard.PlayerWallCounts),
-                PlayerPositions = JsonConvert.SerializeObject(game.CurrentBoard.PlayerPositions),
+                PlayerWallCounts = FormatSerializedObject(JsonConvert.SerializeObject(game.CurrentBoard.PlayerWallCounts)),
+                PlayerPositions = FormatSerializedObject(JsonConvert.SerializeObject(game.CurrentBoard.PlayerPositions)),
                 GameId = game.GameId,
                 Winner = winner,
                 WhosTurn = game.WhosTurn
             };
         }
+
+        private static string FormatSerializedObject(string serialized) => serialized.Replace("PLAYER_ONE", "1").Replace("PLAYER_TWO", "2");
     }
 }

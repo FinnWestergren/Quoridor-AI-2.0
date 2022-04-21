@@ -43,8 +43,8 @@ export const getComputerPlayer = () => getHumanPlayer() == getPlayerOne() ? getP
 
 export const getWalls = () => getState()?.walls; 
 export const getGameId = () => getState()?.gameId;
-export const getPlayerOne = () => getState()?.playerOne; 
-export const getPlayerTwo = () => getState()?.playerTwo;
+export const getPlayerOne = () => 1; 
+export const getPlayerTwo = () => 2;
 export const getCurrentPlayer = () => getState()?.whosTurn;
 export const getWinnerId = () => getState()?.winner;
 export const getIsTie = () => getState()?.isTie;

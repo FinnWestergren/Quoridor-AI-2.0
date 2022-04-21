@@ -9,7 +9,6 @@ import { useMutex } from "../shared/utilities/mutex.js";
 export const setup = async () => {
     window.controller = "quoridor"
     await NewGame();
-    await FetchPossibleActions();
     setupBoard();
     
     window.addEventListener('keydown', async () => {
