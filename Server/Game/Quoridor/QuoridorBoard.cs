@@ -77,7 +77,18 @@ namespace Server.Game.Quoridor
             return possible;
         }
 
+        private IEnumerable<WallSlot> _cachedEmptyWallSlots = null;
+
         public IEnumerable<WallSlot> GetEmptyWallSlots()
+        {
+            if (_cachedEmptyWallSlots == null)
+            {
+                _cachedEmptyWallSlots = EvaluateEmptyWallSlots().ToList();
+            }
+            return _cachedEmptyWallSlots;
+        }
+
+        private IEnumerable<WallSlot> EvaluateEmptyWallSlots()
         {
             foreach (var col in Enumerable.Range(0, QuoridorUtilities.SUBDIMENSION))
             {

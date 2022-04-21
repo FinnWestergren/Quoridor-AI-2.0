@@ -13,7 +13,7 @@ namespace Server.Utilities
             int sideLength = (int)Math.Sqrt(input.Count());
             T[,] output = new T[sideLength, sideLength];
             var i = 0;
-            foreach (T v in input)
+            foreach (T v in input) // more performant to iterate this way
             {
                 var col = i % sideLength;
                 var row = i / sideLength;
@@ -34,7 +34,6 @@ namespace Server.Utilities
                 }
             }
         }
-
 
         public static IEnumerable<IEnumerable<T>> ToSquareEnumerable<T>(T[,] input)
         {
