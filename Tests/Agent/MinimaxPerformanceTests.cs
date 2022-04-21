@@ -18,7 +18,6 @@ namespace Tests.Agent
     {
         protected class Result
         {
-            public string Move { get; set; }
             public int Nodes { get; set; }
             public long Time { get; set; }
             public float TimePerNode => (float)Time / Nodes;
@@ -29,9 +28,14 @@ namespace Tests.Agent
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 1);
-            var p2 = new RandomAgent(game.PlayerTwo);
-            
-            WriteResults("DepthOneQuoridor", RunBots(p1, p2, game));
+            var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
+            var result = new Result
+            {
+                Nodes = p1.NodeCount,
+                Time = time
+            };
+
+            WriteResults("DepthOneQuoridor", result);
         }
 
         [TestMethod]
@@ -39,54 +43,17 @@ namespace Tests.Agent
         {
             var game = new Quoridor();
             var p1 = new MiniMaxAgent(game.PlayerOne, 2);
-            var p2 = new RandomAgent(game.PlayerTwo);
-            // var p2 = new MiniMaxAgent(game.PlayerTwo, 1);
-
-            WriteResults("DepthTwoQuoridor", RunBots(p1, p2, game));
-        }
-
-        [TestMethod]
-        public void TestDepthThreeQuoridor()
-        {
-            var game = new Quoridor();
-            var p1 = new MiniMaxAgent(game.PlayerOne, 3);
-            var p2 = new RandomAgent(game.PlayerTwo);
-
-            WriteResults("DepthThreeQuoridor", RunBots(p1, p2, game));
-        }
-
-
-        private List<Result> RunBots(MiniMaxAgent p1, IAgent p2, IGame game)
-        {
-            var results = new List<Result>();
-            var move = 1;
-            while (!game.IsGameOver())
+            var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
+            var result = new Result
             {
-                var (time, r1) = ActionTimer.TimeFunction(() => p1.GetNextAction(game));
-                results.Add(new Result
-                {
-                    Move = move.ToString(),
-                    Nodes = p1.NodeCount,
-                    Time = time
-                });
-                game.CommitAction(r1.SerializedAction, p1.PlayerId);
-                move++;
-                if (!game.IsGameOver())
-                {
-                    var r2 = p2.GetNextAction(game);
-                    game.CommitAction(r2.SerializedAction, p2.PlayerId);
-                }
-            }
-            results.Add(new Result
-            {
-                Move = "Total",
-                Nodes = results.Sum(r => r.Nodes),
-                Time = results.Sum(r => r.Time)
-            });
-            return results;
+                Nodes = p1.NodeCount,
+                Time = time
+            };
+
+            WriteResults("DepthTwoQuoridor", result);
         }
 
-        private void WriteResults(string testType, List<Result> results)
+        private void WriteResults(string testType, Result result)
         {
             var path = $@"{getRootPath()}\TestOutput\{testType}\";
             Directory.CreateDirectory(path);
@@ -97,11 +64,8 @@ namespace Tests.Agent
             {
                 csv.WriteHeader<Result>();
                 csv.NextRecord();
-                foreach (var record in results)
-                {
-                    csv.WriteRecord(record);
-                    csv.NextRecord();
-                }
+                csv.WriteRecord(result);
+                csv.NextRecord();
             }
         }
 
