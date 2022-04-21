@@ -12,11 +12,13 @@ namespace Server.Utilities
         {
             int sideLength = (int)Math.Sqrt(input.Count());
             T[,] output = new T[sideLength, sideLength];
-            for (var i = 0; i < input.Count(); i++)
+            var i = 0;
+            foreach (T v in input)
             {
                 var col = i % sideLength;
-                int row = i / sideLength;
-                output[col, row] = input.ElementAt(i);
+                var row = i / sideLength;
+                output[col, row] = v;
+                i++;
             }
             return output;
         }
