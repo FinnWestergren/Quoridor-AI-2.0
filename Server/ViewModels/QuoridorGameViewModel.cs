@@ -31,7 +31,7 @@ namespace Server.ViewModels
 
             return new QuoridorGameViewModel
             {
-                Walls = EnumerableUtilities<WallOrientation>.ToSquareEnumerable(game.CurrentBoard.Walls),
+                Walls = EnumerableUtilities.ToSquareEnumerable(game.CurrentBoard.Walls),
                 PlayerWallCounts = JsonConvert.SerializeObject(game.CurrentBoard.PlayerWallCounts),
                 PlayerPositions = JsonConvert.SerializeObject(game.CurrentBoard.PlayerPositions),
                 PlayerOne = game.PlayerOne,
