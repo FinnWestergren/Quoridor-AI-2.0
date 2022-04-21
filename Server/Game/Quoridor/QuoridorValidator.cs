@@ -43,7 +43,7 @@ namespace Server.Game.Quoridor
         public static (bool value, Exception error) ValidateWallCounts(QuoridorBoard board)
         {
             var walls = board.Walls;
-            var list = EnumerableUtilities.From2DArray(walls);
+            var list = EnumerableUtilities<WallOrientation>.From2DArray(walls);
             if (list.Count(w => w != WallOrientation.None) > MAX_WALLS)
             {
                 return (false, new InvalidBoardException("Maximum wall count exceeded."));

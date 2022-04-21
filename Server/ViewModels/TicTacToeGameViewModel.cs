@@ -25,7 +25,7 @@ namespace Server.ViewModels
 
             return new TicTacToeGameViewModel
             {
-                CurrentBoard = EnumerableUtilities.From2DArray(game.CurrentBoard),
+                CurrentBoard = EnumerableUtilities<TicTacToeCell>.From2DArray(game.CurrentBoard),
                 PlayerOne = game.PlayerOne,
                 PlayerTwo = game.PlayerTwo,
                 GameId = game.GameId,

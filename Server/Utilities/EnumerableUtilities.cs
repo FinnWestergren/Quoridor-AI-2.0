@@ -5,23 +5,24 @@ using System.Threading.Tasks;
 
 namespace Server.Utilities
 {
-    public static class EnumerableUtilities
+    public static class EnumerableUtilities<T>
     {
 
-        public static T[,] ToSquareArray<T>(IEnumerable<T> input)
+        public static T[,] ToSquareArray(IEnumerable<T> input, int sideLength)
         {
-            int sideLength = (int)Math.Sqrt(input.Count());
             T[,] output = new T[sideLength, sideLength];
-            for (var i = 0; i < input.Count(); i++)
+            var i = 0;
+            foreach (T v in input)
             {
                 var col = i % sideLength;
-                int row = i / sideLength;
-                output[col, row] = input.ElementAt(i);
+                var row = i / sideLength;
+                output[col, row] = v;
+                i++;
             }
             return output;
         }
 
-        public static IEnumerable<T> From2DArray<T>(T[,] array)
+        public static IEnumerable<T> From2DArray(T[,] array)
         {
             var sidelength = (int) Math.Sqrt(array.Length);
             for (int row = 0; row < sidelength; row++)
@@ -34,7 +35,7 @@ namespace Server.Utilities
         }
 
 
-        public static IEnumerable<IEnumerable<T>> ToSquareEnumerable<T>(T[,] input)
+        public static IEnumerable<IEnumerable<T>> ToSquareEnumerable(T[,] input)
         {
             int sideLength = (int) Math.Sqrt(input.Length);
             IEnumerable<T> getRow(int col)
